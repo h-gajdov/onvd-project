@@ -23,7 +23,7 @@ public class Movement : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
-        Vector3 move = -transform.right * x + transform.up * z;
+        Vector3 move = transform.up * x + transform.right * z;
 
         transform.RotateAround(planet.position, move, speed * Time.deltaTime);
 

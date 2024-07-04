@@ -6,17 +6,21 @@ public class TerrainFace
 {
     private Mesh mesh;
     private int resolution;
+    private int xOffset;
+    private int yOffset;
     private float distance;
     private Vector3 localUp;
     private Vector3 axisA;
     private Vector3 axisB;
     
-    public TerrainFace(Mesh mesh, int resolution, float distance, Vector3 localUp)
+    public TerrainFace(Mesh mesh, int resolution, int xOffset, int yOffset, float distance, Vector3 localUp)
     {
         this.mesh = mesh;
         this.resolution = resolution;
         this.localUp = localUp;
         this.distance = distance;
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
 
         axisA = new Vector3(localUp.y, localUp.z, localUp.x);
         axisB = Vector3.Cross(localUp, axisA);
@@ -34,8 +38,9 @@ public class TerrainFace
             {
                 int i = x + y * resolution;
                 Vector2 percent = new Vector2(x, y) / (resolution - 1);
-                Vector3 pointOnCube = localUp + (percent.x - 0.5f) * 2 * axisA + (percent.y - 0.5f) * 2 * axisB;
-                Vector3 pointOnSphere = PointOnCubeToPointOnSphere(pointOnCube) * (distance);
+                Vector3 pointOnCube = localUp + (percent.x - xOffset + 1.5f) / 2.5f * axisA + (percent.y - yOffset + 1.5f) / 2.5f * axisB;
+                Vector3 pointOnSphere = PointOnCubeToPointOnSphere(pointOnCube);
+                pointOnSphere *= distance + (Coordinate.PointToCoordinate(pointOnSphere).GetHeight() * EarthGenerator.instance.heightMultiplier);
                 verts[i] = pointOnSphere;
 
                 if (x != resolution - 1 && y != resolution - 1)

@@ -15,8 +15,9 @@ public class Coordinate
 
     public static Coordinate PointToCoordinate(Vector3 pointOnUnitSphere)
     {
-        float latitude = Mathf.Asin(pointOnUnitSphere.y);
-        float longitude = Mathf.Atan2(pointOnUnitSphere.x, -pointOnUnitSphere.z);
+        pointOnUnitSphere.Normalize();
+        float latitude = Mathf.Asin(pointOnUnitSphere.y) * Mathf.Rad2Deg;
+        float longitude = Mathf.Atan2(pointOnUnitSphere.z, pointOnUnitSphere.x) * Mathf.Rad2Deg;
         return new Coordinate(latitude, longitude);
     }
 
@@ -26,23 +27,25 @@ public class Coordinate
         float r = Mathf.Cos(coord.latitude);
         float x = Mathf.Sin(coord.longitude) * r;
         float z = -Mathf.Cos(coord.longitude) * r;
-        return new Vector3(x, y, z);
+        return new Vector3(x, y, z) * 50;
     }
 
     public void Print()
     {
-        Debug.Log("Lat: " + latitude.ToString() + "Long: " + longitude.ToString());
+        Debug.Log("Lat: " + latitude.ToString() + " Long: " + longitude.ToString());
     }
 
     public float GetHeight()
     {
-        int column = Mathf.FloorToInt((longitude + 180) / 72);
+        int column = Mathf.FloorToInt((longitude + 180) / 90);
+        if (column > 3) column = 3;
         int row = (latitude < 0) ? 1 : 0;
         int index = row * 4 + column;
+        float valX = longitude - column * 90;
+        float valY = latitude + row * 90;
         Texture2D map = EarthGenerator.instance.heightMaps[index];
-        int x = (int)(longitude + 180) * 2047 / 90;
-        int y = (int)Mathf.Abs(-2047 * (latitude - 90) / 90);
-        Debug.Log(index.ToString() + " " + x.ToString() + " " + y.ToString());
-        return map.GetPixel(x, y).r;
+        float x = (valX + 180) * 8191 / 90f;
+        float y = 8191f - Mathf.Abs(-8191f * (valY - 90f) / 90f);
+        return map.GetPixelBilinear(x / 8191f, y / 8191f).grayscale;
     }
 }
