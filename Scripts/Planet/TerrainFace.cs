@@ -26,6 +26,36 @@ public class TerrainFace
         axisB = Vector3.Cross(localUp, axisA);
     }
 
+    public void ConstructContries(Vector2[] countryCoords)
+    {
+        Vector3[] verts = new Vector3[countryCoords.Length];
+        int[] tris = new int[81 * 3];
+        int trisIndex = 0;
+        
+        for (int i = 0; i < countryCoords.Length; i++)
+        {
+            Coordinate coordinate = new Coordinate(countryCoords[i].y, countryCoords[i].x);
+            Vector3 point = Coordinate.CoordinateToPoint(coordinate);
+            Vector3 pointOnSphere = PointOnCubeToPointOnSphere(point) * distance;
+            verts[i] = pointOnSphere;
+
+            if (i > 60) continue;
+            
+            tris[trisIndex] = i;
+            tris[trisIndex + 1] = i + 81 + 1;
+            tris[trisIndex + 2] = i + 81;
+            tris[trisIndex + 3] = i;
+            tris[trisIndex + 4] = i + 1;
+            tris[trisIndex + 5] = i + 81 + 1;
+            trisIndex += 6;
+        }
+        
+        mesh.Clear();
+        mesh.vertices = verts;
+        mesh.triangles = tris;
+        mesh.RecalculateNormals();
+    }
+    
     public void ConstructMesh()
     {
         Vector3[] verts = new Vector3[resolution * resolution];

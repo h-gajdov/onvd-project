@@ -24,12 +24,14 @@ Shader "Unlit/EarthUnlit"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normal : NORMAL;
             };
 
             struct v2f
             {
                 float4 vertex : SV_POSITION;
                 float3 worldPos : TEXCOORD1;
+                float3 worldNormal : NORMAL;
             };
 
             sampler2D _HeightMap;
@@ -53,6 +55,7 @@ Shader "Unlit/EarthUnlit"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.worldPos =  mul(unity_ObjectToWorld, float4(v.vertex.xyz, 1));
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 return o;
             }
 
@@ -61,7 +64,6 @@ Shader "Unlit/EarthUnlit"
                 float2 uv = pointOnSphereToUV(i.worldPos);
                 float4 height01 = tex2D(_HeightMap, uv);
                 float3 color = height01;
-                // float dst = distance(float3(0, 0, 0), i.worldPos);
                 
                 return height01;
             }

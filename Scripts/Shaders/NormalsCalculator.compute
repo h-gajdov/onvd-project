@@ -1,0 +1,46 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CalculateHeightData
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> HeightMap;
+
+float mapWidth;
+float mapHeight;
+float heightMultiplier;
+float worldRadius;
+const float PI = 3.14159;
+
+float3 coordinateToPoint(float latitude, float longitude)
+{
+    return float3(0, 0, 0);
+}
+
+float3 calculateWorldPoint(int2 texCoord)
+{
+    texCoord.x = (texCoord.x + mapWidth);
+    texCoord.y = (texCoord.y + mapHeight);
+    float2 uv = texCoord / float2(mapHeight - 1, mapHeight - 1);
+    float2 longLat = (uv - 0.5) * PI * float2(2, 1);
+    float3 spherePoint = coordinateToPoint(longLat.y, longLat.x);
+
+    float height01 = HeightMap[texCoord].r;
+    float worldHeight = worldRadius + height01 * heightMultiplier;
+    return spherePoint * worldHeight;
+}
+
+[numthreads(8,8,1)]
+void CalculateHeightData (uint3 id : SV_DispatchThreadID)
+{
+    float3 posNorth = calculateWorldPoint(id.xy + int2(0, 1));
+    float3 posSouth = calculateWorldPoint(id.xy + int2(0, -1));
+    float3 posEast = calculateWorldPoint(id.xy + int2(1, 0));
+    float3 posWest = calculateWorldPoint(id.xy + int2(-1, 0));
+
+    float3 dirNorth = normalize(posNorth - posSouth);
+    float3 dirEast = normalize(posEast - posWest);
+    float3 normalVector = normalize(cross(dirNorth, dirEast));
+
+    float height01 = HeightMap[id.xy].r;
+    HeightMap[id.xy] = float4(normalVector, height01);
+}

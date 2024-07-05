@@ -6,8 +6,11 @@ public class Player : MonoBehaviour
 {
     [Header("Plane Settings")]
     [SerializeField] private Transform planet;
-    [SerializeField] private float speed = 1f;
+    [SerializeField] private float idleSpeed = 1f;
+    [SerializeField] private float accelerationSpeed = 2f;
+    [SerializeField] private float heightChangeSpeed = 0.5f;
     [SerializeField] private float turnSmoothTime = 1f;
+    [SerializeField] private float tiltSmoothTime = 1f;
 
     [Space]
     [Header("Elevation Settings")]
@@ -35,26 +38,47 @@ public class Player : MonoBehaviour
     
     private void Update()
     {
+        LookAtPlanet();
         Move();
+    }
+
+    private void LookAtPlanet()
+    {
+        Vector3 lookDirection = new Vector3(transform.position.x - planet.position.x,
+            transform.position.y - planet.position.y, transform.position.z - planet.position.z);
+        Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
+        transform.rotation = lookRotation;
     }
     
     private void Move()
     {
-        float x = Input.GetAxisRaw("Horizontal");
-        float z = Input.GetAxisRaw("Vertical");
-
-        if (x != 0 || z != 0) move = -cam.up * x + cam.right * z;
-        
-        transform.RotateAround(planet.position, move, speed * Time.deltaTime);
-        
-        Quaternion lookRotation = Quaternion.LookRotation(transform.forward, move);
-        planeTransform.rotation =  
-            Quaternion.Slerp(planeTransform.rotation, lookRotation, turnSmoothTime * Time.deltaTime);
-
+        int changesHeight = 0;
+        float speed = (Input.GetKey(KeyCode.W)) ? accelerationSpeed : idleSpeed;
+        float turnDirection = Input.GetAxisRaw("Horizontal");
+        float turnAmount = turnDirection * turnSmoothTime * Time.deltaTime;
         float distanceFromPlanet = Vector3.Distance(planet.position, transform.position);
-        if(Input.GetKey(KeyCode.Q) && distanceFromPlanet > minElevation) 
-            controller.Move(-transform.forward);
+        controller.Move(speed * Time.deltaTime * planeTransform.right);
+
+        if (Input.GetKey(KeyCode.Q) && distanceFromPlanet > minElevation)
+        {
+            controller.Move(-transform.forward * heightChangeSpeed * Time.deltaTime);
+            changesHeight = 1;
+        }
         else if (Input.GetKey(KeyCode.E) && distanceFromPlanet < maxElevation)
-            controller.Move(transform.forward);
+        {
+            controller.Move(transform.forward * heightChangeSpeed * Time.deltaTime);
+            changesHeight = -1;
+        }
+        
+        UpdateRotation(turnAmount, turnDirection, changesHeight);
+    }
+
+    private void UpdateRotation(float turnAmount, float direction, int changesHeight)
+    {
+        float tiltAngle = (direction != 0f) ? -direction * 45f : 0f;
+        Quaternion tiltRotation = Quaternion.Euler(tiltAngle, changesHeight * 45f, 0f);
+        planeTransform.Rotate(0f, 0f, turnAmount);
+        planeTransform.GetChild(0).localRotation = Quaternion.Slerp(planeTransform.GetChild(0).localRotation,
+            tiltRotation, tiltSmoothTime * Time.deltaTime);
     }
 }

@@ -23,11 +23,14 @@ public class Coordinate
 
     public static Vector3 CoordinateToPoint(Coordinate coord)
     {
-        float y = Mathf.Sin(coord.latitude);
-        float r = Mathf.Cos(coord.latitude);
-        float x = Mathf.Sin(coord.longitude) * r;
-        float z = -Mathf.Cos(coord.longitude) * r;
-        return new Vector3(x, y, z) * 50;
+        float latitudeRad = coord.latitude * Mathf.Deg2Rad;
+        float longitudeRad = coord.longitude * Mathf.Deg2Rad;
+        
+        float y = Mathf.Sin(latitudeRad);
+        float r = Mathf.Cos(latitudeRad);
+        float x = Mathf.Sin(longitudeRad) * r;
+        float z = -Mathf.Cos(longitudeRad) * r;
+        return new Vector3(x, y, z) * 600;
     }
 
     public void Print()
@@ -49,3 +52,4 @@ public class Coordinate
         return map.GetPixelBilinear(x / 8191f, y / 8191f).grayscale;
     }
 }
+//-513.4, -5.5, -310.5
