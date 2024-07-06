@@ -30,7 +30,7 @@ public class TerrainFace
     {
         Vector3[] verts = new Vector3[countryCoords.Length + 1];
         Vector3 center = Vector3.zero;
-        int[] tris = new int[8 * 8 * 6];
+        int[] tris = new int[countryCoords.Length * 6];
         int trisIndex = 0;
 
         for (int i = 0; i < countryCoords.Length; i++)
@@ -41,27 +41,18 @@ public class TerrainFace
             verts[i] = point;
 
             center += point;
+            tris[trisIndex] = i;
+            tris[trisIndex + 1] = (i + 1) % (countryCoords.Length + 1);
+            tris[trisIndex + 2] = countryCoords.Length;
+            trisIndex += 3;
         }
 
         center /= countryCoords.Length; //The one vertex we subtract is the center i.e. the last vertex
-        verts[81] = center;
-        
-        for (int y = 0; y < 9; y++)
-        {
-            for (int x = 0; x < 9; x++)
-            {
-                int i = x + y * 9;
-                
-                tris[trisIndex] = i;
-                tris[trisIndex + 1] = (i + 1) % 82;
-                tris[trisIndex + 2] = 81;                    
-                trisIndex += 3;
-            }
-        }
+        verts[countryCoords.Length] = center;
 
-        tris[381] = 0;
-        tris[382] = 80;
-        tris[383] = 81;
+        tris[trisIndex - 3] = 0;
+        tris[trisIndex - 2] = countryCoords.Length - 1;
+        tris[trisIndex - 1] = countryCoords.Length;
         
         mesh.Clear();
         mesh.vertices = verts;

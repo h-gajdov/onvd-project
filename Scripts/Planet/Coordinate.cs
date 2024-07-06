@@ -52,4 +52,3 @@ public class Coordinate
         return map.GetPixelBilinear(x / 8191f, y / 8191f).grayscale;
     }
 }
-//-513.4, -5.5, -310.5
