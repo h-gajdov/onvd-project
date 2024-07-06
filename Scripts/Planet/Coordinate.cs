@@ -30,7 +30,7 @@ public class Coordinate
         float r = Mathf.Cos(latitudeRad);
         float x = Mathf.Sin(longitudeRad) * r;
         float z = -Mathf.Cos(longitudeRad) * r;
-        return new Vector3(x, y, z) * 600;
+        return new Vector3(x, y, z);
     }
 
     public void Print()

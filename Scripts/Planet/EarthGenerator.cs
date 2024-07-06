@@ -373,6 +373,7 @@ public class EarthGenerator : MonoBehaviour
        MeshFilter filter = new MeshFilter();
        GameObject meshObj = new GameObject("mesh");
        meshObj.transform.parent = transform;
+       meshObj.transform.position = transform.position;
        meshObj.AddComponent<MeshRenderer>().sharedMaterial = new Material(Shader.Find("Standard"));
        filter = meshObj.AddComponent<MeshFilter>();
        filter.sharedMesh = new Mesh();
@@ -390,8 +391,8 @@ public class EarthGenerator : MonoBehaviour
     private void OnValidate()
     {
         instance = this;
-        FillFaces();
-        GenerateMesh();
-        // FillCountries();
+        // FillFaces();
+        // GenerateMesh();
+        FillCountries();
     }
 }
