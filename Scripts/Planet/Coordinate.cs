@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Coordinate
 {
-    private float latitude;
-    private float longitude;
+    public float latitude;
+    public float longitude;
     
     public Coordinate(float latitude, float longitude)
     {

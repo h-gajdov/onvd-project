@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SimpleJSON;
 using UnityEngine;
 
-[Serializable]
 public class CountryJSONReader
 {
     private static JSONNode root;
@@ -25,15 +25,22 @@ public class CountryJSONReader
         for (int i = 0, cx = 0; i < root.Count; i++)
         {
             double[,] countryGeometry = ReadGeometry(i);
-            if (countryGeometry == null) continue;
-        
+            CountryInfo info = ReadInfo(i);
             Vector2[] points = GameMath.ConvertDouble2ToVector2(countryGeometry);
-            countries.Add(new Country(cx++, points));
+            
+            countries.Add(new Country(cx++, info, points));
         }
 
         return countries.ToArray();
     }
 
+    public static CountryInfo ReadInfo(int index)
+    {
+        var unserializedArray = root[index]["properties"];
+        string name = unserializedArray["ADMIN"];
+        return new CountryInfo(name);
+    }
+    
     public static double[,] ReadGeometry(int index)
     {
         double[,] result = null;
@@ -76,21 +83,41 @@ public class CountryJSONReader
 public class Country
 {
     public int index;
-    // public CountryProperty[] properties;
-    // public CountryGeometry[] geometry;
+    public CountryInfo info;
     public Vector2[] geometry;
-
-    public Country(int index, Vector2[] geometry)
+    public Bounds2D bounds;
+    
+    public Country(int index, CountryInfo info, Vector2[] geometry)
     {
         this.index = index;
+        this.info = info;
+        
         this.geometry = new Vector2[geometry.Length];
+        Vector2[] worldPos = new Vector2[geometry.Length];
         for (int i = 0; i < geometry.Length; i++)
+        {
+            Coordinate coordinate = new Coordinate(geometry[i].y, geometry[i].x);
             this.geometry[i] = geometry[i];
+            Vector3 point = Coordinate.CoordinateToPoint(coordinate) * 10;
+            worldPos[i] = new Vector2(point.x, point.z);
+        }
+
+        this.bounds = new Bounds2D(worldPos);
     }
 }
 
 [Serializable]
-public class CountryProperty
+public class CountryInfo
 {
     public string name;
+    
+    public CountryInfo(string name)
+    {
+        this.name = name;
+    }
+
+    public void Print()
+    {
+        Debug.Log("Name: " + name);
+    }
 }

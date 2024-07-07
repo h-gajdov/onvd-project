@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +10,7 @@ public class EarthGenerator : MonoBehaviour
     private TerrainFace[] faces;
 
     public TextAsset countryJson;
+    public TextAsset cityJson;
     public Texture2D[] heightMaps;
     public float heightMultiplier = 2f;
     public int numberOfFacesPerSide = 4;
@@ -371,30 +373,33 @@ public class EarthGenerator : MonoBehaviour
     {
        CountryJSONReader.SetJSONFile(countryJson);
        Country[] countries = CountryJSONReader.ReadAllCountries();
-
-       if(filters == null || filters.Length == 0) filters = new MeshFilter[countries.Length];
-       faces = new TerrainFace[countries.Length];
        
-       for (int i = 0; i < countries.Length; i++)
-       {
-          if (filters[i] == null)
-          {
-             GameObject meshObj = new GameObject("mesh");
-             meshObj.transform.parent = transform;
-             LineRenderer lineRenderer = meshObj.AddComponent<LineRenderer>();
-             lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-             lineRenderer.startWidth = 0.05f;
-             lineRenderer.endWidth = 0.05f;
-             lineRenderer.positionCount = countries[i].geometry.Length;
-             int j = 0;
-             foreach (Vector2 point in countries[i].geometry)
-             {
-                Coordinate coord = new Coordinate(point.y, point.x);
-                Vector3 pointOnSphere = Coordinate.CoordinateToPoint(coord) * radius;
-                lineRenderer.SetPosition(j++, pointOnSphere);
-             }
-          }
-       }
+       CityJSONReader.SetJSONFile(cityJson);
+       CityJSONReader.ReadAllCapitals();
+
+       // if(filters == null || filters.Length == 0) filters = new MeshFilter[countries.Length];
+       // faces = new TerrainFace[countries.Length];
+       //
+       // for (int i = 0; i < countries.Length; i++)
+       // {
+       //    if (filters[i] == null)
+       //    {
+       //       GameObject meshObj = new GameObject("mesh");
+       //       meshObj.transform.parent = transform;
+       //       LineRenderer lineRenderer = meshObj.AddComponent<LineRenderer>();
+       //       lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+       //       lineRenderer.startWidth = 0.05f;
+       //       lineRenderer.endWidth = 0.05f;
+       //       lineRenderer.positionCount = countries[i].geometry.Length;
+       //       int j = 0;
+       //       foreach (Vector2 point in countries[i].geometry)
+       //       {
+       //          Coordinate coord = new Coordinate(point.y, point.x);
+       //          Vector3 pointOnSphere = Coordinate.CoordinateToPoint(coord) * radius;
+       //          lineRenderer.SetPosition(j++, pointOnSphere);
+       //       }
+       //    }
+       // }
     }
     
     private void GenerateMesh()
