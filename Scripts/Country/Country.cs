@@ -24,11 +24,10 @@ public class CountryJSONReader
 
         for (int i = 0, cx = 0; i < root.Count; i++)
         {
-            double[,] countryGeometry = ReadGeometry(i);
+            CountryPolygon[] polygons = ReadGeometry(i);
             CountryInfo info = ReadInfo(i);
-            Vector2[] points = GameMath.ConvertDouble2ToVector2(countryGeometry);
             
-            countries.Add(new Country(cx++, info, points));
+            countries.Add(new Country(cx++, info, polygons));
         }
 
         return countries.ToArray();
@@ -41,37 +40,46 @@ public class CountryJSONReader
         return new CountryInfo(name);
     }
     
-    public static double[,] ReadGeometry(int index)
+    public static CountryPolygon[] ReadGeometry(int index)
     {
-        double[,] result = null;
+        CountryPolygon[] result;
+        double[,] coordsMatrix;
         var unserializedArray = root[index]["geometry"]["coordinates"];
         
         if (root[index]["geometry"]["type"] == "Polygon")
         {
+            result = new CountryPolygon[1];
             unserializedArray = unserializedArray[0];
-            result = new double[unserializedArray.Count,2];
+            coordsMatrix = new double[unserializedArray.Count,2];
             for (int i = 0; i < unserializedArray.Count; i++)
             {
-                result[i, 0] = unserializedArray[i][0];
-                result[i, 1] = unserializedArray[i][1];
+                coordsMatrix[i, 0] = unserializedArray[i][0];
+                coordsMatrix[i, 1] = unserializedArray[i][1];
             }
+
+            Vector2[] points = GameMath.ConvertDouble2ToVector2(coordsMatrix);
+            result[0] = new CountryPolygon(points);
         }
         else
         {
-            int count = 0;
+            result = new CountryPolygon[unserializedArray.Count];
+            // for (int i = 0; i < unserializedArray.Count; i++)
+            // {
+            //     count += unserializedArray[i][0].Count;
+            // }
+
             for (int i = 0; i < unserializedArray.Count; i++)
             {
-                count += unserializedArray[i][0].Count;
-            }
-
-            result = new double[count, 2];
-            for (int i = 0, ix = 0; i < unserializedArray.Count; i++)
-            {
-                for (int j = 0; j < unserializedArray[i][0].Count; j++)
+                int numberOfCoords = unserializedArray[i][0].Count;
+                coordsMatrix = new double[numberOfCoords, 2];
+                for (int j = 0; j < numberOfCoords; j++)
                 {
-                    result[ix, 0] = unserializedArray[i][0][j][0];
-                    result[ix++, 1] = unserializedArray[i][0][j][1];
+                    coordsMatrix[j, 0] = unserializedArray[i][0][j][0];
+                    coordsMatrix[j, 1] = unserializedArray[i][0][j][1];
                 }
+                
+                Vector2[] points = GameMath.ConvertDouble2ToVector2(coordsMatrix);
+                result[i] = new CountryPolygon(points);
             }
         }
 
@@ -84,25 +92,18 @@ public class Country
 {
     public int index;
     public CountryInfo info;
-    public Vector2[] geometry;
-    public Bounds2D bounds;
+    // public Vector2[] geometry;
+    public CountryPolygon[] polygons;
     
-    public Country(int index, CountryInfo info, Vector2[] geometry)
+    public Country(int index, CountryInfo info, CountryPolygon[] polygons)
     {
         this.index = index;
         this.info = info;
         
-        this.geometry = new Vector2[geometry.Length];
-        Vector2[] worldPos = new Vector2[geometry.Length];
-        for (int i = 0; i < geometry.Length; i++)
-        {
-            Coordinate coordinate = new Coordinate(geometry[i].y, geometry[i].x);
-            this.geometry[i] = geometry[i];
-            Vector3 point = Coordinate.CoordinateToPoint(coordinate) * 10;
-            worldPos[i] = new Vector2(point.x, point.z);
-        }
-
-        this.bounds = new Bounds2D(worldPos);
+        this.polygons = new CountryPolygon[polygons.Length];
+        for (int i = 0; i < polygons.Length; i++)
+            this.polygons[i] = polygons[i];
+        
     }
 }
 
@@ -119,5 +120,40 @@ public class CountryInfo
     public void Print()
     {
         Debug.Log("Name: " + name);
+    }
+}
+
+public class CountryPolygon
+{
+    public Vector2[] geometry;
+
+    public CountryPolygon(Vector2[] geometry)
+    {
+        this.geometry = new Vector2[geometry.Length];
+        for (int i = 0; i < geometry.Length; i++)
+            this.geometry[i] = geometry[i];
+    }
+
+    public void DrawLineRenderer(Transform parent = null)
+    {
+        GameObject meshObj = new GameObject("mesh");
+        meshObj.transform.parent = parent;
+        LineRenderer lineRenderer = meshObj.AddComponent<LineRenderer>();
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.startColor = Color.black;
+        lineRenderer.endColor = Color.black;
+        lineRenderer.startWidth = 0.25f;
+        lineRenderer.endWidth = 0.25f;
+        lineRenderer.positionCount = geometry.Length;
+                
+        int j = 0;
+        foreach (Vector2 point in geometry)
+        {
+            Coordinate coord = new Coordinate(point.y, point.x);
+            Vector3 pointOnSphere = Coordinate.CoordinateToPoint(coord);
+            pointOnSphere *=
+                Coordinate.PointToCoordinate(pointOnSphere).GetHeight() * EarthGenerator.instance.heightMultiplier + (EarthGenerator.instance.radius + 0.25f);
+            lineRenderer.SetPosition(j++, pointOnSphere);
+        }
     }
 }

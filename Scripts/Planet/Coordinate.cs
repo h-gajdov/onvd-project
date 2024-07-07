@@ -24,7 +24,7 @@ public class Coordinate
     public static Vector3 CoordinateToPoint(Coordinate coord)
     {
         float latitudeRad = coord.latitude * Mathf.Deg2Rad;
-        float longitudeRad = coord.longitude * Mathf.Deg2Rad;
+        float longitudeRad = coord.longitude * Mathf.Deg2Rad + Mathf.PI / 2f;
         
         float y = Mathf.Sin(latitudeRad);
         float r = Mathf.Cos(latitudeRad);

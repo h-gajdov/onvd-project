@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,6 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [Header("Plane Settings")]
-    [SerializeField] private Transform planet;
     [SerializeField] private float idleSpeed = 1f;
     [SerializeField] private float accelerationSpeed = 2f;
     [SerializeField] private float heightChangeSpeed = 0.5f;
@@ -17,21 +17,43 @@ public class Player : MonoBehaviour
     [SerializeField] private float minElevation = 620f;
     [SerializeField] private float maxElevation = 670f;
     private float startElevation = 645f;
+    
+    [Space]
+    [Header("Package Settings")]
+    [SerializeField] private GameObject packagePrefab;
+    [SerializeField] private float gravityMultiplier = -9.81f;
+    [SerializeField] private float packageLifetime = 100;
 
     private CharacterController controller;
     private Transform planeTransform;
     private Transform cam;
     private Vector3 move;
+
+    public static Player instance;
+
+    public float GravityMultiplier
+    {
+        get
+        {
+            return gravityMultiplier;
+        }
+    }
     
     private void Start()
     {
+        if (instance == null) instance = this;
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
         controller = GetComponent<CharacterController>();
         planeTransform = transform.GetChild(0);
         cam = Camera.main.transform;
 
         transform.position = new Vector3(startElevation, 0f, 0f);
-        Vector3 lookDirection = new Vector3(transform.position.x - planet.position.x,
-            transform.position.y - planet.position.y, transform.position.z - planet.position.z);
+        Vector3 lookDirection = GameManager.GetPlanetDirection(transform.position);
         Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
         transform.rotation = lookRotation;
     }
@@ -40,12 +62,13 @@ public class Player : MonoBehaviour
     {
         LookAtPlanet();
         Move();
+        
+        if(Input.GetKeyDown(KeyCode.Space)) DropPackage();
     }
 
     private void LookAtPlanet()
     {
-        Vector3 lookDirection = new Vector3(transform.position.x - planet.position.x,
-            transform.position.y - planet.position.y, transform.position.z - planet.position.z);
+        Vector3 lookDirection = GameManager.GetPlanetDirection(transform.position);
         Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
         transform.rotation = lookRotation;
     }
@@ -56,7 +79,7 @@ public class Player : MonoBehaviour
         float speed = (Input.GetKey(KeyCode.W)) ? accelerationSpeed : idleSpeed;
         float turnDirection = Input.GetAxisRaw("Horizontal");
         float turnAmount = turnDirection * turnSmoothTime * Time.deltaTime;
-        float distanceFromPlanet = Vector3.Distance(planet.position, transform.position);
+        float distanceFromPlanet = GameManager.GetDistanceFromPlanet(transform.position);
         controller.Move(speed * Time.deltaTime * planeTransform.right);
 
         if (Input.GetKey(KeyCode.Q) && distanceFromPlanet > minElevation)
@@ -80,5 +103,13 @@ public class Player : MonoBehaviour
         planeTransform.Rotate(0f, 0f, turnAmount);
         planeTransform.GetChild(0).localRotation = Quaternion.Slerp(planeTransform.GetChild(0).localRotation,
             tiltRotation, tiltSmoothTime * Time.deltaTime);
+    }
+
+    private void DropPackage()
+    {
+        Vector3 gravityDown = GameManager.GetPlanetDirection(transform.position);
+        GameObject package = Instantiate(packagePrefab, transform.position, Quaternion.identity);
+        package.transform.rotation = Quaternion.LookRotation(gravityDown);
+        Destroy(package, packageLifetime);
     }
 }

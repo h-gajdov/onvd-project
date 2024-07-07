@@ -25,40 +25,6 @@ public class TerrainFace
         axisA = new Vector3(localUp.y, localUp.z, localUp.x);
         axisB = Vector3.Cross(localUp, axisA);
     }
-
-    public void ConstructContries(Vector2[] countryCoords)
-    {
-        Vector3[] verts = new Vector3[countryCoords.Length + 1];
-        Vector3 center = Vector3.zero;
-        int[] tris = new int[countryCoords.Length * 6];
-        int trisIndex = 0;
-
-        for (int i = 0; i < countryCoords.Length; i++)
-        {
-            Coordinate coordinate = new Coordinate(countryCoords[i].y, countryCoords[i].x);
-            Vector3 point = Coordinate.CoordinateToPoint(coordinate) * distance;
-            // Vector3 pointOnSphere = PointOnCubeToPointOnSphere(point) * distance;
-            verts[i] = point;
-
-            center += point;
-            tris[trisIndex] = i;
-            tris[trisIndex + 1] = (i + 1) % (countryCoords.Length + 1);
-            tris[trisIndex + 2] = countryCoords.Length;
-            trisIndex += 3;
-        }
-
-        center /= countryCoords.Length; //The one vertex we subtract is the center i.e. the last vertex
-        verts[countryCoords.Length] = center;
-
-        tris[trisIndex - 3] = 0;
-        tris[trisIndex - 2] = countryCoords.Length - 1;
-        tris[trisIndex - 1] = countryCoords.Length;
-        
-        mesh.Clear();
-        mesh.vertices = verts;
-        mesh.triangles = tris;
-        mesh.RecalculateNormals();
-    }
     
     public void ConstructMesh()
     {
