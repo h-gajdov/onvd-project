@@ -3,7 +3,7 @@ Shader "Unlit/EarthUnlit"
     Properties
     {
         _HeightMap ("Texture", 2D) = "white" {}
-        _Distance("Distance", Float) = 0.5
+        _LightIntensity("LightIntensity", Float) = 2.0
     }
     SubShader
     {
@@ -35,16 +35,16 @@ Shader "Unlit/EarthUnlit"
             };
 
             sampler2D _HeightMap;
-            float _Distance;
+            float _LightIntensity;
             
             float2 pointOnSphereToUV(float3 p)
             {
                 p = normalize(p);
 
+                const float PI = 3.14159;
                 float latitude = asin(p.y);
                 float longitude = atan2(p.z, p.x);
-
-                const float PI = 3.14159;
+                    
                 float u = (longitude / PI + 1) / 2;
                 float v = latitude / PI + 0.5;
                 return float2(u, v);
@@ -63,9 +63,10 @@ Shader "Unlit/EarthUnlit"
             {
                 float2 uv = pointOnSphereToUV(i.worldPos);
                 float4 height01 = tex2D(_HeightMap, uv);
-                float3 color = height01;
-                
-                return height01;
+                float3 normal = i.worldNormal;
+                float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
+                float3 light = max(0, dot(normal, lightDir)) * _LightIntensity;
+                return float4(light.rgb, 1) + height01;
             }
             ENDCG
         }

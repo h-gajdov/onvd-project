@@ -42,7 +42,7 @@ public class TerrainFace
                 Vector3 pointOnSphere = PointOnCubeToPointOnSphere(pointOnCube);
                 pointOnSphere *= distance + (Coordinate.PointToCoordinate(pointOnSphere).GetHeight() * EarthGenerator.instance.heightMultiplier);
                 verts[i] = pointOnSphere;
-
+                
                 if (x != resolution - 1 && y != resolution - 1)
                 {
                     tris[trisIndex] = i;
