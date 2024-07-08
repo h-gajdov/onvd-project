@@ -23,10 +23,21 @@ public class Package : MonoBehaviour
         if (planetDistance > stopDistance) return;
         
         transform.position = stopPoint;
+        CalculateDrop();
         Destroy(rb);
         Destroy(this);
     }
 
+    private void CalculateDrop()
+    {
+        Coordinate packageCoordinate = Coordinate.PointToCoordinate(stopPoint);
+        packageCoordinate.Print();
+        float distance =
+            GameMath.DistanceBetweenCoordinatesOnEarth(packageCoordinate, GameManager.selectedCity.coordinate);
+        Debug.Log(distance.ToString() + " " + GameMath.CalculateScoreFromDistance(distance));
+        GameManager.SetRandomCity();
+    }
+    
     private float CalculateStopDistance()
     {
         return Coordinate.PointToCoordinate(transform.position).GetHeight() * EarthGenerator.instance.heightMultiplier +

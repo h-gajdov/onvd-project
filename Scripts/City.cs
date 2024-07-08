@@ -13,20 +13,17 @@ public class CityJSONReader
         root = JSONNode.Parse(jsonFile.text)["features"];
     }
 
-    public static void ReadAllCapitals()
+    public static City[] ReadAllCapitals()
     {
         List<City> capitals = new List<City>();
         for (int i = 0; i < root.Count; i++)
         {
             if(!isCapital(i)) continue;
             
-            GameObject dot = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            dot.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-            dot.name = ReadCity(i).name;
-            dot.transform.position = ReadCity(i).worldPosition;
-            
             capitals.Add(ReadCity(i));
         }
+
+        return capitals.ToArray();
     }
 
     public static City ReadCity(int index)
@@ -53,7 +50,7 @@ public class City
     {
         get
         {
-            return Coordinate.CoordinateToPoint(coordinate) * 10;
+            return Coordinate.CoordinateToPoint(coordinate) * GameManager.planetRadius;
         }
     }
     
