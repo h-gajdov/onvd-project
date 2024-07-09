@@ -2,7 +2,12 @@ Shader "Unlit/EarthUnlit"
 {
     Properties
     {
-        _HeightMap ("Texture", 2D) = "white" {}
+        _OceanMap ("MapWithOcean", 2D) = "white" {}
+        _ColorMapWest ("ColorMapWest", 2D) = "white" {}
+        _ColorMapEast ("ColorMapEast", 2D) = "white" {}
+        _NormalMapWest ("NormalMapWest", 2D) = "white" {}
+        _NormalMapEast ("NormalMapEast", 2D) = "white" {}
+        [Toggle] _UseNormal("Use Normal Map", Float) = 0
         _LightIntensity("LightIntensity", Float) = 2.0
     }
     SubShader
@@ -34,8 +39,13 @@ Shader "Unlit/EarthUnlit"
                 float3 worldNormal : NORMAL;
             };
 
-            sampler2D _HeightMap;
+            sampler2D _OceanMap;
+            sampler2D _ColorMapWest;
+            sampler2D _ColorMapEast;
+            sampler2D _NormalMapWest;
+            sampler2D _NormalMapEast;
             float _LightIntensity;
+            float _UseNormal;
             
             float2 pointOnSphereToUV(float3 p)
             {
@@ -59,13 +69,30 @@ Shader "Unlit/EarthUnlit"
                 return o;
             }
 
+            float4 getHeightFromUV(float2 uv)
+            {
+                if(uv.x <= 0.5) return tex2D(_ColorMapWest, uv * float2(2,1));
+                
+                return tex2D(_ColorMapEast, float2(2 * uv.x - 1, uv.y));
+            }
+
+            float4 getNormalFromUV(float2 uv)
+            {
+                if(uv.x <= 0.5) return tex2D(_NormalMapWest, uv * float2(2,1));
+                
+                return tex2D(_NormalMapEast, float2(2 * uv.x - 1, uv.y));
+            }
+            
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 uv = pointOnSphereToUV(i.worldPos);
-                float4 height01 = tex2D(_HeightMap, uv);
-                float3 normal = i.worldNormal;
+                float4 height01 = getHeightFromUV(uv);
+                float3 normal = (_UseNormal == 1) ? getNormalFromUV(uv) : i.worldNormal;
                 float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
                 float3 light = max(0, dot(normal, lightDir)) * _LightIntensity;
+                
+                if(height01.r == 0) return tex2D(_OceanMap, uv);
+                
                 return float4(light.rgb, 1) + height01;
             }
             ENDCG

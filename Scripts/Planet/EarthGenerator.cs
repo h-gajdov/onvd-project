@@ -9,6 +9,7 @@ public class EarthGenerator : MonoBehaviour
     [SerializeField, HideInInspector] private MeshFilter[] filters;
     private TerrainFace[] faces;
 
+    public Material earthMaterial;
     public TextAsset countryJson;
     public TextAsset cityJson;
     public Texture2D[] heightMaps;
@@ -359,7 +360,7 @@ public class EarthGenerator : MonoBehaviour
                 {
                     GameObject meshObj = new GameObject("mesh");
                     meshObj.transform.parent = transform;
-                    meshObj.AddComponent<MeshRenderer>().sharedMaterial = new Material(Shader.Find("Standard"));
+                    meshObj.AddComponent<MeshRenderer>().sharedMaterial = earthMaterial;
                     filters[faceIndex] = meshObj.AddComponent<MeshFilter>();
                     filters[faceIndex].sharedMesh = new Mesh();   
                 }
