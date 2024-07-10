@@ -2,7 +2,9 @@ Shader "Unlit/EarthUnlit"
 {
     Properties
     {
-        _OceanMap ("MapWithOcean", 2D) = "white" {}
+        _ShallowWater("ShallowWater", Color) = (1, 1, 1, 1)
+        _DeepWater("DeepWater", Color) = (1, 1, 1, 1)
+        _OceanMap ("OceanMap", 2D) = "white" {}
         _ColorMapWest ("ColorMapWest", 2D) = "white" {}
         _ColorMapEast ("ColorMapEast", 2D) = "white" {}
         _NormalMapWest ("NormalMapWest", 2D) = "white" {}
@@ -39,11 +41,15 @@ Shader "Unlit/EarthUnlit"
                 float3 worldNormal : NORMAL;
             };
 
+            float4 _ShallowWater;
+            float4 _DeepWater;
+            
             sampler2D _OceanMap;
             sampler2D _ColorMapWest;
             sampler2D _ColorMapEast;
             sampler2D _NormalMapWest;
             sampler2D _NormalMapEast;
+            
             float _LightIntensity;
             float _UseNormal;
             
@@ -83,6 +89,27 @@ Shader "Unlit/EarthUnlit"
                 return tex2D(_NormalMapEast, float2(2 * uv.x - 1, uv.y));
             }
             
+            float calculateGrayScale(float3 color)
+            {
+                return (color.r + color.g + color.b) / 3.0;
+            }
+
+            float calculateSpecular(float3 normal, float3 viewDir, float3 dirToSun, float smoothness = 1)
+            {
+                float specularAngle = acos(dot(normalize(dirToSun - viewDir), normal));
+                float specularExponent = specularAngle / smoothness;
+                float specularHighlight = exp(-specularExponent * specularExponent);
+                return specularHighlight;
+            }
+            
+            float4 calculateOcean(v2f i)
+            {
+                float2 uv = pointOnSphereToUV(i.worldPos);
+                float3 color = tex2D(_OceanMap, uv);
+                float height = calculateGrayScale(color);
+                return lerp(_DeepWater, _ShallowWater, height);
+            }
+            
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 uv = pointOnSphereToUV(i.worldPos);
@@ -91,8 +118,10 @@ Shader "Unlit/EarthUnlit"
                 float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
                 float3 light = max(0, dot(normal, lightDir)) * _LightIntensity;
                 
-                if(height01.r == 0) return tex2D(_OceanMap, uv);
-                
+                if(height01.r == 0) {
+                    float3 oceanLight = max(0, dot(i.worldNormal, lightDir)) * _LightIntensity;
+                    return calculateOcean(i) + float4(oceanLight.rgb, 1) / 4.0;
+                }
                 return float4(light.rgb, 1) + height01;
             }
             ENDCG

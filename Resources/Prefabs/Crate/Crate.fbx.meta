@@ -1,8 +1,29 @@
 fileFormatVersion: 2
-guid: 8aecfc78d63367c4e9594db15eb67c1e
+guid: cf84c2883635ef1409059d4207468e7f
 ModelImporter:
   serializedVersion: 20200
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      74: 6545095838539800666
+    second: Crate|ClothAction
+  - first:
+      74: -8379034830487479200
+    second: Crate|CrateAction
+  - first:
+      74: -1499369472838988166
+    second: Cloth|ClothAction
+  - first:
+      74: 3162074538438390393
+    second: Cloth|CrateAction
+  - first:
+      74: 8003312214571475973
+    second: ParachuteFall
+  - first:
+      74: 3308393632137536645
+    second: Armature|ClothAction
+  - first:
+      74: 512036552240651078
+    second: Armature|CrateAction
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -30,7 +51,36 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: ParachuteFall
+      takeName: Armature|Armature|Armature|ArmatureAction.001
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 60
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 0
   meshes:
     lODScreenPercentages: []

@@ -6,6 +6,7 @@ using UnityEngine;
 public class Package : MonoBehaviour
 {
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private Animator anim;
 
     private Vector3 stopPoint;
     private float stopDistance;
@@ -23,6 +24,7 @@ public class Package : MonoBehaviour
         if (planetDistance > stopDistance) return;
         
         transform.position = stopPoint;
+        anim.SetBool("hasFallen", true);
         CalculateDrop();
         Destroy(rb);
         Destroy(this);

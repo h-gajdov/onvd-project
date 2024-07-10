@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657892, g: 0.4964133, b: 0.57481736, a: 1}
+  m_IndirectSpecularColor: {r: 0.4453674, g: 0.4950232, b: 0.57399523, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -468,13 +468,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
-  m_LocalRotation: {x: 0.40821788, y: 0.23456976, z: -0.10938167, w: 0.8754261}
+  m_LocalRotation: {x: 0.40722126, y: 0.37755507, z: -0.18989037, w: 0.80966955}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 50, y: 30, z: 0}
+  m_LocalEulerAnglesHint: {x: 53.4, y: 50, z: 0}
 --- !u!1 &853879028
 GameObject:
   m_ObjectHideFlags: 0
@@ -894,7 +894,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2062449291}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0c72a11619aaec4ba97eea0b20100c9, type: 3}
   m_Name: 
@@ -1166,7 +1166,7 @@ MonoBehaviour:
   tiltSmoothTime: 10
   minElevation: 610
   maxElevation: 670
-  packagePrefab: {fileID: 7246035742560263170, guid: aacba81282697234c99af16994369d54, type: 3}
+  packagePrefab: {fileID: 5614573783890334765, guid: aacba81282697234c99af16994369d54, type: 3}
   gravityMultiplier: -2.4525
   packageLifetime: 120
 --- !u!143 &919132148674151426
