@@ -2,8 +2,6 @@ Shader "Unlit/EarthUnlit"
 {
     Properties
     {
-        _ShallowWater("ShallowWater", Color) = (1, 1, 1, 1)
-        _DeepWater("DeepWater", Color) = (1, 1, 1, 1)
         _OceanMap ("OceanMap", 2D) = "white" {}
         _ColorMapWest ("ColorMapWest", 2D) = "white" {}
         _ColorMapEast ("ColorMapEast", 2D) = "white" {}
@@ -11,6 +9,11 @@ Shader "Unlit/EarthUnlit"
         _NormalMapEast ("NormalMapEast", 2D) = "white" {}
         [Toggle] _UseNormal("Use Normal Map", Float) = 0
         _LightIntensity("LightIntensity", Float) = 2.0
+        _SpecularIntensity("SpecularIntensity", Float) = 1.0
+        _ShallowWater("ShallowWater", Color) = (1, 1, 1, 1)
+        _DeepWater("DeepWater", Color) = (1, 1, 1, 1)
+        _WavesNormal1 ("WavesNormalMap1", 2D) = "white" {}
+        _WavesNormal2 ("WavesNormalMap2", 2D) = "white" {}
     }
     SubShader
     {
@@ -39,6 +42,7 @@ Shader "Unlit/EarthUnlit"
                 float4 vertex : SV_POSITION;
                 float3 worldPos : TEXCOORD1;
                 float3 worldNormal : NORMAL;
+                float3 viewDir : TEXCOORD0;
             };
 
             float4 _ShallowWater;
@@ -52,6 +56,7 @@ Shader "Unlit/EarthUnlit"
             
             float _LightIntensity;
             float _UseNormal;
+            float _SpecularIntensity;
             
             float2 pointOnSphereToUV(float3 p)
             {
@@ -72,6 +77,7 @@ Shader "Unlit/EarthUnlit"
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.worldPos =  mul(unity_ObjectToWorld, float4(v.vertex.xyz, 1));
                 o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.viewDir = WorldSpaceViewDir(v.vertex);
                 return o;
             }
 
@@ -119,8 +125,10 @@ Shader "Unlit/EarthUnlit"
                 float3 light = max(0, dot(normal, lightDir)) * _LightIntensity;
                 
                 if(height01.r == 0) {
-                    float3 oceanLight = max(0, dot(i.worldNormal, lightDir)) * _LightIntensity;
-                    return calculateOcean(i) + float4(oceanLight.rgb, 1) / 4.0;
+                    float3 oceanLight = max(0, dot(i.worldNormal, -lightDir)) * _LightIntensity / 4;
+                    float3 viewDir = normalize(i.worldPos - _WorldSpaceCameraPos.xyz);
+                    float specular = saturate(calculateSpecular(i.worldNormal, viewDir, -lightDir, _SpecularIntensity));
+                    return calculateOcean(i) + float4(oceanLight, 1) + specular;
                 }
                 return float4(light.rgb, 1) + height01;
             }
