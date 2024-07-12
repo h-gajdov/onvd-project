@@ -37,7 +37,9 @@ public class Package : MonoBehaviour
         float distance =
             GameMath.DistanceBetweenCoordinatesOnEarth(packageCoordinate, GameManager.selectedCity.coordinate);
         Debug.Log(distance.ToString() + " " + GameMath.CalculateScoreFromDistance(distance));
+        GameManager.ShowCity();
         GameManager.SetRandomCity();
+        // GameManager.SetRandomCity();
     }
     
     private float CalculateStopDistance()

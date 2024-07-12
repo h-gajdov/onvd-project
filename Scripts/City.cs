@@ -50,7 +50,7 @@ public class City
     {
         get
         {
-            return Coordinate.CoordinateToPoint(coordinate) * GameManager.planetRadius;
+            return Coordinate.CoordinateToPoint(coordinate) * (GameManager.planetRadius + coordinate.GetHeight() * 20);
         }
     }
     

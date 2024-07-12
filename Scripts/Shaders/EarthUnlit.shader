@@ -14,6 +14,7 @@ Shader "Unlit/EarthUnlit"
         _DeepWater("DeepWater", Color) = (1, 1, 1, 1)
         _WavesNormal1 ("WavesNormalMap1", 2D) = "white" {}
         _WavesNormal2 ("WavesNormalMap2", 2D) = "white" {}
+        _Noise ("Noise", 2D) = "white" {}
     }
     SubShader
     {
@@ -29,6 +30,8 @@ Shader "Unlit/EarthUnlit"
             #pragma multi_compile_fog
 
             #include "UnityCG.cginc"
+            			#include "UnityLightingCommon.cginc"
+			#include "AutoLight.cginc"
 
             struct appdata
             {
@@ -53,6 +56,7 @@ Shader "Unlit/EarthUnlit"
             sampler2D _ColorMapEast;
             sampler2D _NormalMapWest;
             sampler2D _NormalMapEast;
+            sampler2D _Noise;
             
             float _LightIntensity;
             float _UseNormal;
@@ -99,14 +103,6 @@ Shader "Unlit/EarthUnlit"
             {
                 return (color.r + color.g + color.b) / 3.0;
             }
-
-            float calculateSpecular(float3 normal, float3 viewDir, float3 dirToSun, float smoothness = 1)
-            {
-                float specularAngle = acos(dot(normalize(dirToSun - viewDir), normal));
-                float specularExponent = specularAngle / smoothness;
-                float specularHighlight = exp(-specularExponent * specularExponent);
-                return specularHighlight;
-            }
             
             float4 calculateOcean(v2f i)
             {
@@ -127,8 +123,8 @@ Shader "Unlit/EarthUnlit"
                 if(height01.r == 0) {
                     float3 oceanLight = max(0, dot(i.worldNormal, -lightDir)) * _LightIntensity / 4;
                     float3 viewDir = normalize(i.worldPos - _WorldSpaceCameraPos.xyz);
-                    float specular = saturate(calculateSpecular(i.worldNormal, viewDir, -lightDir, _SpecularIntensity));
-                    return calculateOcean(i) + float4(oceanLight, 1) + specular;
+                    // float specular = saturate(calculateSpecular(i.worldNormal, viewDir, -lightDir, _SpecularIntensity));
+                    return calculateOcean(i) + float4(oceanLight, 1);
                 }
                 return float4(light.rgb, 1) + height01;
             }

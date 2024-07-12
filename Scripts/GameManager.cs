@@ -8,6 +8,7 @@ using Random = UnityEngine.Random;
 public class GameManager : MonoBehaviour
 {
     private static Transform planet;
+    private static GameObject cityMarker;
     public static float planetRadius = 600f;
 
     public TextMeshProUGUI cityText;
@@ -27,6 +28,7 @@ public class GameManager : MonoBehaviour
         }
         
         planet = GameObject.FindGameObjectWithTag("Planet").transform;
+        cityMarker = Resources.Load("Prefabs/CityMarker/CityMarker") as GameObject;
     }
 
     public static Vector3 GetPlanetDirection(Vector3 position)
@@ -44,6 +46,15 @@ public class GameManager : MonoBehaviour
     {
         selectedCity = cities[Random.Range(0, cities.Length)];
         instance.cityText.text = selectedCity.name;
+    }
+
+    public static void ShowCity()
+    {
+        GameObject citySphere = Instantiate(cityMarker);
+        TextMeshProUGUI cityText = citySphere.transform.GetComponentInChildren<TextMeshProUGUI>();
+        citySphere.transform.position = selectedCity.worldPosition;
+        cityText.text = selectedCity.name;
+        Destroy(citySphere, 120f);
     }
 
     private void Start()

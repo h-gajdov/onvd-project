@@ -9,8 +9,10 @@ public class Player : MonoBehaviour
     [SerializeField] private float idleSpeed = 1f;
     [SerializeField] private float accelerationSpeed = 2f;
     [SerializeField] private float heightChangeSpeed = 0.5f;
+    [SerializeField] private float speedSmoothTime = 1f;
     [SerializeField] private float turnSmoothTime = 1f;
     [SerializeField] private float tiltSmoothTime = 1f;
+    private float moveSpeed;
 
     [Space]
     [Header("Elevation Settings")]
@@ -26,8 +28,6 @@ public class Player : MonoBehaviour
 
     private CharacterController controller;
     private Transform planeTransform;
-    private Transform cam;
-    private Vector3 move;
 
     public static Player instance;
 
@@ -50,12 +50,12 @@ public class Player : MonoBehaviour
         
         controller = GetComponent<CharacterController>();
         planeTransform = transform.GetChild(0);
-        cam = Camera.main.transform;
 
         transform.position = new Vector3(startElevation, 0f, 0f);
         Vector3 lookDirection = GameManager.GetPlanetDirection(transform.position);
         Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
         transform.rotation = lookRotation;
+        moveSpeed = idleSpeed;
     }
     
     private void Update()
@@ -80,7 +80,10 @@ public class Player : MonoBehaviour
         float turnDirection = Input.GetAxisRaw("Horizontal");
         float turnAmount = turnDirection * turnSmoothTime * Time.deltaTime;
         float distanceFromPlanet = GameManager.GetDistanceFromPlanet(transform.position);
-        controller.Move(speed * Time.deltaTime * planeTransform.right);
+
+        moveSpeed = Mathf.Lerp(moveSpeed, speed, speedSmoothTime * Time.deltaTime);
+        
+        controller.Move(moveSpeed * Time.deltaTime * planeTransform.right);
 
         if (Input.GetKey(KeyCode.Q) && distanceFromPlanet > minElevation)
         {

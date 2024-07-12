@@ -49,6 +49,14 @@ public class GameMath
         return HaversineFormula(lat1, lat2, lng1, lng2);
     }
 
+    public static void LookAtTransform(Transform looker, Transform looked)
+    {
+        Vector3 lookDirection = new Vector3(looker.transform.position.x - looked.transform.position.x,
+            looker.transform.position.y - looked.transform.position.y, looker.transform.position.z - looked.transform.position.z);
+        Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
+        looker.transform.rotation = lookRotation;
+    }
+    
     public static float DistanceBetweenCoordinatesOnEarth(Coordinate a, Coordinate b)
     {
         float lat1 = a.latitude * Mathf.Deg2Rad;

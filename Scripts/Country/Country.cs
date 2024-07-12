@@ -152,7 +152,7 @@ public class CountryPolygon
             Coordinate coord = new Coordinate(point.y, point.x);
             Vector3 pointOnSphere = Coordinate.CoordinateToPoint(coord);
             pointOnSphere *=
-                Coordinate.PointToCoordinate(pointOnSphere).GetHeight() * EarthGenerator.instance.heightMultiplier + (EarthGenerator.instance.radius + 0.25f);
+                Coordinate.PointToCoordinate(pointOnSphere).GetHeight() * EarthGenerator.instance.heightMultiplier + (EarthGenerator.instance.radius + 0.5f);
             lineRenderer.SetPosition(j++, pointOnSphere);
         }
     }
