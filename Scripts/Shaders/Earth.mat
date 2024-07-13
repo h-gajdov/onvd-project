@@ -31,20 +31,40 @@ Material:
         m_Texture: {fileID: 2800000, guid: e713a1f198641594e819780b71dc1e10, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _FoamDistanceMap:
+        m_Texture: {fileID: 2800000, guid: b305c7c0602907847bbd59d3fcc9f844, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FoamMap:
+        m_Texture: {fileID: 2800000, guid: b305c7c0602907847bbd59d3fcc9f844, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _HeightMap:
         m_Texture: {fileID: 2800000, guid: 0163ddb88049be842951722f57b44686, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 0163ddb88049be842951722f57b44686, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Noise:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NoiseMap:
+        m_Texture: {fileID: 2800000, guid: 2d0db6267a5c8974a8779e67b9745e2b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _NormalMap:
         m_Texture: {fileID: 2800000, guid: 726ed23a554e8834d84a1cee44e0edcd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap1:
+        m_Texture: {fileID: 2800000, guid: 1eb6a2caf9a10eb429d0401974b3e775, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap2:
+        m_Texture: {fileID: 2800000, guid: 46195f9dc4a78d14395ce5a34137959a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMapEast:
@@ -73,10 +93,30 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Distance: 50
+    - _FoamDst: 0
+    - _FoamEdgeBlend: 10
+    - _FoamFrequency: 529.5
+    - _FoamMaskBlend: 3
+    - _FoamMaskScale: 19.22
+    - _FoamNoiseScale: 123.9
+    - _FoamNoiseSpeed: 1
+    - _FoamNoiseStrength: 1
+    - _FoamScale: 500
+    - _FoamSpeed: 1
+    - _FoamWidth: 1
     - _LightIntensity: 1
+    - _NoiseScale: 8
+    - _NoiseSpeed: 0.01
+    - _ShoreFoamDst: 0.26
     - _SpecularIntensity: 0.25
+    - _Speed1: 0.05
+    - _Speed2: 0.05
+    - _Tiling1: 0.15
+    - _Tiling2: 0.05
     - _UseNormal: 1
+    - _WaveStrength: 0.5
     m_Colors:
     - _DeepWater: {r: 0.078431375, g: 0.101960786, b: 0.4509804, a: 1}
+    - _FoamColour: {r: 1, g: 1, b: 1, a: 1}
     - _ShallowWater: {r: 0.105882354, g: 0.54901963, b: 0.6627451, a: 1}
   m_BuildTextureStacks: []

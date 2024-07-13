@@ -12,9 +12,18 @@ Shader "Unlit/EarthUnlit"
         _SpecularIntensity("SpecularIntensity", Float) = 1.0
         _ShallowWater("ShallowWater", Color) = (1, 1, 1, 1)
         _DeepWater("DeepWater", Color) = (1, 1, 1, 1)
-        _WavesNormal1 ("WavesNormalMap1", 2D) = "white" {}
-        _WavesNormal2 ("WavesNormalMap2", 2D) = "white" {}
-        _Noise ("Noise", 2D) = "white" {}
+        _NormalMap1 ("Normal Map 1", 2D) = "white" {}
+        _NormalMap2 ("Normal Map 2", 2D) = "white" {}
+        _Speed1 ("Speed 1", Float) = 1.0
+        _Speed2 ("Speed 2", Float) = 0.5
+        _Tiling1 ("Tiling 1", Float) = 1.0
+        _Tiling2 ("Tiling 2", Float) = 1.0
+        _WaveStrength ("WaveStrength", Float) = 1.0
+        _FoamMap("FoamMap", 2D) = "white" {}
+        _NoiseMap("NoiseMap", 2D) = "white" {}
+        _FoamScale ("FoamScale", Float) = 1.0
+        _NoiseScale("NoiseScale", Float) = 1.0
+        _NoiseSpeed("NoiseSpeed", Float) = 1.0
     }
     SubShader
     {
@@ -56,11 +65,23 @@ Shader "Unlit/EarthUnlit"
             sampler2D _ColorMapEast;
             sampler2D _NormalMapWest;
             sampler2D _NormalMapEast;
-            sampler2D _Noise;
+            sampler2D _MainTex;
+            sampler2D _NormalMap1;
+            sampler2D _NormalMap2;
+            sampler2D _FoamMap;
+            sampler2D _NoiseMap;
             
             float _LightIntensity;
             float _UseNormal;
             float _SpecularIntensity;
+            float _Speed1;
+            float _Speed2;
+            float _Tiling1;
+            float _Tiling2;
+            float _WaveStrength;
+            float _FoamScale;
+            float _NoiseScale;
+            float _NoiseSpeed;
             
             float2 pointOnSphereToUV(float3 p)
             {
@@ -103,13 +124,63 @@ Shader "Unlit/EarthUnlit"
             {
                 return (color.r + color.g + color.b) / 3.0;
             }
+
+            float calculateSpecular(float3 normal, float3 viewDir, float3 dirToSun, float smoothness) {
+				float specularAngle = acos(dot(normalize(dirToSun - viewDir), normal));
+				float specularExponent = specularAngle / smoothness;
+				float specularHighlight = exp(-max(0,specularExponent) * specularExponent);
+				return specularHighlight;
+			}
+            
+            float4 calculateOceanColor(float2 uv)
+            {
+                float3 color = tex2D(_OceanMap, uv);
+                float height = calculateGrayScale(color);
+                return lerp(_DeepWater, _ShallowWater, height);
+            }
             
             float4 calculateOcean(v2f i)
             {
                 float2 uv = pointOnSphereToUV(i.worldPos);
-                float3 color = tex2D(_OceanMap, uv);
-                float height = calculateGrayScale(color);
-                return lerp(_DeepWater, _ShallowWater, height);
+                float2 uvX = i.worldPos.zy;
+                float2 uvY = i.worldPos.xz;
+                float2 uvZ = i.worldPos.xy;
+                float3 blendWeight = pow(abs(i.worldNormal), 1);
+                blendWeight /= dot(blendWeight, 1);
+                float3 viewDir = normalize(i.worldPos - _WorldSpaceCameraPos.xyz);
+                
+                float2 uv1X = uvX * _Tiling1 + _Time.y * _Speed1;
+                float2 uv1Y = uvY * _Tiling1 + _Time.y * _Speed1;
+                float2 uv1Z = uvZ * _Tiling1 + _Time.y * _Speed1;
+                float2 uv2X = uvX * _Tiling2 - _Time.y * _Speed2;
+                float2 uv2Y = uvY * _Tiling2 - _Time.y * _Speed2;
+                float2 uv2Z = uvZ * _Tiling2 - _Time.y * _Speed2;
+
+                float4 normal1X = tex2D(_NormalMap1, uv1X);
+                float4 normal1Y = tex2D(_NormalMap1, uv1Y);
+                float4 normal1Z = tex2D(_NormalMap1, uv1Z);
+                float4 normal2X = tex2D(_NormalMap2, uv2X);
+                float4 normal2Y = tex2D(_NormalMap2, uv2Y);
+                float4 normal2Z = tex2D(_NormalMap2, uv2Z);
+
+                float4 normal1 = normal1X * blendWeight.x + normal1Y * blendWeight.y + normal1Z * blendWeight.z;
+                float4 normal2 = normal2X * blendWeight.x + normal2Y * blendWeight.y + normal2Z * blendWeight.z;
+                
+                float3 blendedNormal = normalize(normal1.rgb * 2.0 - 1.0 + normal2.rgb * 2.0 - 1.0);
+
+                float3 lightDir = normalize(_WorldSpaceLightPos0);
+                float diff = max(0, dot(blendedNormal, -lightDir));
+
+                float specular = saturate(calculateSpecular(i.worldNormal, viewDir, lightDir, _SpecularIntensity));
+
+                float4 foam = tex2D(_FoamMap, uv);
+                foam = 1 - foam;
+                foam = pow(foam, 200*sin(_Time * _WaveStrength) + 300);
+                float foamGray = calculateGrayScale(foam);
+                foam = float4(foamGray, foamGray, foamGray, 1);
+
+                float3 col = calculateOceanColor(uv) * diff; //+ specular * diff;
+                return float4(col, 1) + foam;
             }
             
             fixed4 frag (v2f i) : SV_Target
@@ -121,10 +192,11 @@ Shader "Unlit/EarthUnlit"
                 float3 light = max(0, dot(normal, lightDir)) * _LightIntensity;
                 
                 if(height01.r == 0) {
-                    float3 oceanLight = max(0, dot(i.worldNormal, -lightDir)) * _LightIntensity / 4;
+                    float3 oceanLight = max(0, dot(i.worldNormal, lightDir)) * _LightIntensity / 4;
                     float3 viewDir = normalize(i.worldPos - _WorldSpaceCameraPos.xyz);
-                    // float specular = saturate(calculateSpecular(i.worldNormal, viewDir, -lightDir, _SpecularIntensity));
-                    return calculateOcean(i) + float4(oceanLight, 1);
+                    // return calculateOcean(i) + float4(oceanLight, 1);
+                    
+                    return calculateOcean(i) + float4(oceanLight.rgb, 1);
                 }
                 return float4(light.rgb, 1) + height01;
             }
