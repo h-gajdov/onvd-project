@@ -172,15 +172,23 @@ Shader "Unlit/EarthUnlit"
                 float diff = max(0, dot(blendedNormal, -lightDir));
 
                 float specular = saturate(calculateSpecular(i.worldNormal, viewDir, lightDir, _SpecularIntensity));
-
+                specular = (specular * diff >= 0.7 ? 1 : 0);
+                
                 float4 foam = tex2D(_FoamMap, uv);
                 foam = 1 - foam;
-                foam = pow(foam, 200*sin(_Time * _WaveStrength) + 300);
+                foam = pow(foam, _FoamScale);
                 float foamGray = calculateGrayScale(foam);
                 foam = float4(foamGray, foamGray, foamGray, 1);
+                
+                float2 noiseUV = uv * _NoiseScale + _Time * _NoiseSpeed;
+                float2 noiseOffset = tex2D(_NoiseMap, noiseUV).rg;
+                float2 newUV = uv + noiseOffset;
+                float4 foamWithNoise = tex2D(_FoamMap, newUV);
 
-                float3 col = calculateOceanColor(uv) * diff; //+ specular * diff;
-                return float4(col, 1) + foam;
+                foamWithNoise = (foam >= _WaveStrength) ? foamWithNoise : 0;
+                
+                float3 col = calculateOceanColor(uv) * diff + specular * diff;
+                return float4(col, 1) + foam + foamWithNoise;
             }
             
             fixed4 frag (v2f i) : SV_Target
