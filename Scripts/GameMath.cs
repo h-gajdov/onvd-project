@@ -82,4 +82,10 @@ public class GameMath
     {
         return Mathf.Clamp(maxScore * (1 - (distance / maxDistance)), 0, maxScore);
     }
+
+    public static Vector3 FixVertexOnSphere(Vector3 point)
+    {
+        Coordinate coord = Coordinate.PointToCoordinate(point);
+        return Coordinate.CoordinateToPoint(coord) * GameManager.planetRadius;
+    }
 }
