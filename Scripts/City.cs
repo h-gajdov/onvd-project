@@ -26,6 +26,34 @@ public class CityJSONReader
         return capitals.ToArray();
     }
 
+    public static City[] ReadEasyCities()
+    {
+        List<City> cities = new List<City>();
+        List<string> names = new List<string>
+            { "Paris", "Berlin", "Moscow", "Washington, D.C.", "Ottawa", "Madrid", "London", "Beijing", "Tokyo", "Canberra", "Skopje", "Rome", "Amsterdam", "Istanbul", "Athens", "Warsaw", "Rio de Janeiro", "Seoul", "Mexico City"};
+        for (int i = 0; i < root.Count; i++)
+        {
+            City city = ReadCity(i);
+            if (!names.Contains(city.name) || isPopulatedPlace(i)) continue;
+            
+            cities.Add(city);
+        }
+
+        return cities.ToArray();
+    }
+
+    public static City[] ReadHardCities()
+    {
+        List<City> cities = new List<City>();
+        for (int i = 0; i < root.Count; i++)
+        {
+            if (isPopulatedPlace(i)) continue;
+            cities.Add(ReadCity(i));
+        }
+        
+        return cities.ToArray();
+    }
+    
     public static City ReadCity(int index)
     {
         var unserializedCity = root[index]["properties"];
@@ -37,6 +65,11 @@ public class CityJSONReader
     public static bool isCapital(int index)
     {
         return root[index]["properties"]["featurecla"].Value.Contains("Admin-0 capital");
+    }
+
+    public static bool isPopulatedPlace(int index)
+    {
+        return root[index]["properties"]["featurecla"].Value == "Populated place";
     }
 }
 

@@ -375,9 +375,6 @@ public class EarthGenerator : MonoBehaviour
        CountryJSONReader.SetJSONFile(countryJson);
        Country[] countries = CountryJSONReader.ReadAllCountries();
        
-       CityJSONReader.SetJSONFile(cityJson);
-       GameManager.cities = CityJSONReader.ReadAllCapitals();
-       
        faces = new TerrainFace[countries.Length];
        
        for (int i = 0; i < countries.Length; i++)

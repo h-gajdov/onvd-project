@@ -9,8 +9,7 @@ public class CameraControler : MonoBehaviour
     
     private void Update()
     {
-        Vector3 lookDirection = new Vector3(transform.position.x - planet.position.x,
-            transform.position.y - planet.position.y, transform.position.z - planet.position.z);
+        Vector3 lookDirection = GameManager.GetPlanetDirection(transform.position);
         Quaternion lookRotation = Quaternion.LookRotation(-lookDirection);
         transform.rotation = lookRotation;
     }

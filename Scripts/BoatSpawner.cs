@@ -41,6 +41,8 @@ public class BoatSpawner : MonoBehaviour
                 distanceToBeSpawned += path.path.length / numberOfShipsPerPath;
             }
         }
+        
+        Destroy(this);
     }
 
     private void SpawnShip(PathCreator path, GameObject prefab, float distanceToBeSpawned, Transform parent = null)

@@ -80,7 +80,7 @@ public class Player : MonoBehaviour
         float turnDirection = Input.GetAxisRaw("Horizontal");
         float turnAmount = turnDirection * turnSmoothTime * Time.deltaTime;
         float distanceFromPlanet = GameManager.GetDistanceFromPlanet(transform.position);
-
+        
         moveSpeed = Mathf.Lerp(moveSpeed, speed, speedSmoothTime * Time.deltaTime);
         
         controller.Move(moveSpeed * Time.deltaTime * planeTransform.right);

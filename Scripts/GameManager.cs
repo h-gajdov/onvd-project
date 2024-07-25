@@ -7,10 +7,14 @@ using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
-    private static Transform planet;
+    public enum Difficulty {Easy, Medium, Hard}
+    public Difficulty difficulty;
+    
+    public static Transform planet;
     private static GameObject cityMarker;
     public static float planetRadius = 600f;
 
+    public TextAsset cityJson;
     public TextMeshProUGUI cityText;
 
     public static City[] cities;
@@ -21,11 +25,6 @@ public class GameManager : MonoBehaviour
     private void OnValidate()
     {
         if(instance == null) instance = this;
-        else
-        {
-            Destroy(this);
-            return;
-        }
         
         planet = GameObject.FindGameObjectWithTag("Planet").transform;
         cityMarker = Resources.Load("Prefabs/CityMarker/CityMarker") as GameObject;
@@ -33,8 +32,9 @@ public class GameManager : MonoBehaviour
 
     public static Vector3 GetPlanetDirection(Vector3 position)
     {
-        return new Vector3(position.x - planet.position.x,
-            position.y - planet.position.y, position.z - planet.position.z);
+        return position - planet.position;
+        // return new Vector3(position.x - planet.position.x,
+        //     position.y - planet.position.y, position.z - planet.position.z);
     }
     
     public static float GetDistanceFromPlanet(Vector3 position)
@@ -59,6 +59,20 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        CityJSONReader.SetJSONFile(cityJson);
+        switch (difficulty)
+        {
+            case Difficulty.Easy:
+                cities = CityJSONReader.ReadEasyCities();
+                break;
+            case Difficulty.Medium:
+                cities = CityJSONReader.ReadAllCapitals();
+                break;
+            case Difficulty.Hard:
+                cities = CityJSONReader.ReadHardCities();
+                break;
+        }
+        
         SetRandomCity();
     }
 

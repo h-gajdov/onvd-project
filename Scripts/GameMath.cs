@@ -88,4 +88,12 @@ public class GameMath
         Coordinate coord = Coordinate.PointToCoordinate(point);
         return Coordinate.CoordinateToPoint(coord) * GameManager.planetRadius;
     }
+
+    public static Vector3 GetRandomPointOnEarth(float radius = 1)
+    {
+        float longitude = Random.Range(-180f, 180f);
+        float latitude = Random.Range(-90f, 90f);
+        Coordinate coord = new Coordinate(latitude, longitude);
+        return Coordinate.CoordinateToPoint(coord) * radius;
+    }
 }
