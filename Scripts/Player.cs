@@ -83,7 +83,7 @@ public class Player : MonoBehaviour
         
         moveSpeed = Mathf.Lerp(moveSpeed, speed, speedSmoothTime * Time.deltaTime);
         
-        controller.Move(moveSpeed * Time.deltaTime * planeTransform.right);
+        controller.Move(moveSpeed * Time.deltaTime * planeTransform.forward);
 
         if (Input.GetKey(KeyCode.Q) && distanceFromPlanet > minElevation)
         {
@@ -102,8 +102,8 @@ public class Player : MonoBehaviour
     private void UpdateRotation(float turnAmount, float direction, int changesHeight)
     {
         float tiltAngle = (direction != 0f) ? -direction * 45f : 0f;
-        Quaternion tiltRotation = Quaternion.Euler(tiltAngle, changesHeight * 45f, 0f);
-        planeTransform.Rotate(0f, 0f, turnAmount);
+        Quaternion tiltRotation = Quaternion.Euler(changesHeight * 45f, 0f, tiltAngle);
+        planeTransform.Rotate(0f, turnAmount, 0f);
         planeTransform.GetChild(0).localRotation = Quaternion.Slerp(planeTransform.GetChild(0).localRotation,
             tiltRotation, tiltSmoothTime * Time.deltaTime);
     }
