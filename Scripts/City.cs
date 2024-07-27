@@ -59,7 +59,8 @@ public class CityJSONReader
         var unserializedCity = root[index]["properties"];
         Vector2 point = new Vector2(unserializedCity["latitude"], unserializedCity["longitude"]);
         string name = unserializedCity["name"];
-        return new City(name, point);
+        string countryName = unserializedCity["sov0name"];
+        return new City(name, point, countryName);
     }
 
     public static bool isCapital(int index)
@@ -77,6 +78,7 @@ public class CityJSONReader
 public class City
 {
     public string name;
+    public string countryName;
     public Coordinate coordinate;
 
     public Vector3 worldPosition
@@ -87,10 +89,11 @@ public class City
         }
     }
     
-    public City(string name, Vector2 coordinate)
+    public City(string name, Vector2 coordinate, string countryName)
     {
         this.name = name;
         this.coordinate = new Coordinate(coordinate.x, coordinate.y);
+        this.countryName = countryName;
     }
 
     public void Print()

@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
 
     public TextAsset cityJson;
     public TextMeshProUGUI cityText;
+    private TextMeshProUGUI countryText;
 
     public static City[] cities;
     public static City selectedCity;
@@ -28,6 +29,7 @@ public class GameManager : MonoBehaviour
         
         planet = GameObject.FindGameObjectWithTag("Planet").transform;
         cityMarker = Resources.Load("Prefabs/CityMarker/CityMarker") as GameObject;
+        countryText = cityText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
     }
 
     public static Vector3 GetPlanetDirection(Vector3 position)
@@ -46,6 +48,7 @@ public class GameManager : MonoBehaviour
     {
         selectedCity = cities[Random.Range(0, cities.Length)];
         instance.cityText.text = selectedCity.name;
+        instance.countryText.text = selectedCity.countryName;
     }
 
     public static void ShowCity()
