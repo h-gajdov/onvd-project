@@ -2472,7 +2472,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   birdPrefab: {fileID: 6076573583062611230, guid: cf0a44656d466554fb5cf1682bf81160, type: 3}
   spawnHeight: 10
-  numberOfFlocks: 1
+  numberOfFlocks: 10
   maxBirdsPerFlock: 8
 --- !u!4 &1569246367
 Transform:

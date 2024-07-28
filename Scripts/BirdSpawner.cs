@@ -17,6 +17,9 @@ public class BirdSpawner : MonoBehaviour
         for (int i = 0; i < numberOfFlocks; i++)
         {
             GameObject flock = new GameObject("Flock");
+            GameObject flockDirection = new GameObject("FlockDirection");
+            flockDirection.transform.parent = flock.transform;
+            flockDirection.transform.localPosition = Vector3.zero;
             flock.AddComponent<FlockController>();
             flock.transform.parent = transform;
             flock.transform.position = GameMath.GetRandomPointOnEarth(GameManager.planetRadius + spawnHeight);
@@ -29,9 +32,9 @@ public class BirdSpawner : MonoBehaviour
                 float y = Random.Range(-1f, 1f);
                 float z = Random.Range(-5f, 5f);
                 
-                bird.parent = flock.transform;
-                bird.localPosition = new Vector3(x, y, z);
-                bird.localRotation = Quaternion.Euler(90f, 0f, 0f);
+                bird.parent = flockDirection.transform;
+                bird.localPosition = new Vector3(x, z, y);
+                bird.localRotation = Quaternion.identity;
             }
         }
         
