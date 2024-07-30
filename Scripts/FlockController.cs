@@ -6,16 +6,15 @@ using Random = UnityEngine.Random;
 
 public class FlockController : MonoBehaviour
 {
-    [SerializeField] private float speed = 5f;
+    [SerializeField] private float speed = 2f;
+    [SerializeField] private float flyHeight = 10f;
 
     private Vector3 point;
     private Transform flockDirection;
-    private CharacterController controller;
     
     private void Awake()
     {
         point = GameMath.GetRandomPointOnEarth(GameManager.planetRadius);
-        controller = gameObject.AddComponent<CharacterController>();
         flockDirection = transform.GetChild(0);
 
         flockDirection.rotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
@@ -23,22 +22,10 @@ public class FlockController : MonoBehaviour
 
     private void Update()
     {
-        controller.Move( speed * Time.deltaTime * flockDirection.up);
-
-        GameMath.LookAtTransform(transform, GameManager.planet);
-        
-        // Vector3 direction = (point - transform.position).normalized;
-        // Vector3 up = GameManager.GetPlanetDirection(transform.position).normalized;
-        // Vector3 forward = direction - up * Vector3.Dot(direction, up);
-        // Quaternion lookRotation = Quaternion.LookRotation(forward.normalized);
-        //
-        // float singleStep = speed * Mathf.Deg2Rad * Time.deltaTime;
-        // float distanceFromTarget = Vector3.Distance(GameMath.FixVertexOnSphere(transform.position), point);
-        //
-        // transform.position = Vector3.RotateTowards(transform.position, point, singleStep, 0f);
-        // transform.rotation = Quaternion.Lerp(transform.rotation, lookRotation, turnSmoothTime * Time.deltaTime);
-        //
-        // if(distanceFromTarget <= 3f) 
-        //     point = GameMath.GetRandomPointOnEarth(GameManager.planetRadius);
+        Vector3 newPos = transform.position + flockDirection.up * speed * Time.deltaTime;
+        Vector3 gravityUp = newPos.normalized;
+        newPos = Vector3.zero + gravityUp * (GameManager.planetRadius + flyHeight);
+        transform.position = newPos;
+        transform.rotation = Quaternion.FromToRotation(transform.forward, gravityUp) * transform.rotation;
     }
 }

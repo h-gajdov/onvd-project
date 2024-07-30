@@ -25,8 +25,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject packagePrefab;
     [SerializeField] private float gravityMultiplier = -9.81f;
     [SerializeField] private float packageLifetime = 100;
-
-    private CharacterController controller;
+    
     private Transform planeTransform;
 
     public static Player instance;
@@ -48,7 +47,6 @@ public class Player : MonoBehaviour
             return;
         }
         
-        controller = GetComponent<CharacterController>();
         planeTransform = transform.GetChild(0);
 
         transform.position = new Vector3(startElevation, 0f, 0f);
@@ -60,19 +58,12 @@ public class Player : MonoBehaviour
     
     private void Update()
     {
-        LookAtPlanet();
         Move();
-        
+
         if(Input.GetKeyDown(KeyCode.Space)) DropPackage();
     }
 
-    private void LookAtPlanet()
-    {
-        Vector3 lookDirection = GameManager.GetPlanetDirection(transform.position);
-        Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
-        transform.rotation = lookRotation;
-    }
-    
+    private float height = 45f;
     private void Move()
     {
         int changesHeight = 0;
@@ -81,18 +72,20 @@ public class Player : MonoBehaviour
         float turnAmount = turnDirection * turnSmoothTime * Time.deltaTime;
         float distanceFromPlanet = GameManager.GetDistanceFromPlanet(transform.position);
         
-        moveSpeed = Mathf.Lerp(moveSpeed, speed, speedSmoothTime * Time.deltaTime);
-        
-        controller.Move(moveSpeed * Time.deltaTime * planeTransform.forward);
+        Vector3 newPos = transform.position + planeTransform.forward * speed * Time.deltaTime;
+        Vector3 gravityUp = newPos.normalized;
+        newPos = Vector3.zero + gravityUp * (GameManager.planetRadius + height);
+        transform.position = newPos;
+        transform.rotation = Quaternion.FromToRotation(transform.forward, gravityUp) * transform.rotation;
 
         if (Input.GetKey(KeyCode.Q) && distanceFromPlanet > minElevation)
         {
-            controller.Move(-transform.forward * heightChangeSpeed * Time.deltaTime);
+            height -= heightChangeSpeed * Time.deltaTime;
             changesHeight = 1;
         }
         else if (Input.GetKey(KeyCode.E) && distanceFromPlanet < maxElevation)
         {
-            controller.Move(transform.forward * heightChangeSpeed * Time.deltaTime);
+            height += heightChangeSpeed * Time.deltaTime;
             changesHeight = -1;
         }
         
