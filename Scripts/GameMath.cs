@@ -96,4 +96,14 @@ public class GameMath
         Coordinate coord = new Coordinate(latitude, longitude);
         return Coordinate.CoordinateToPoint(coord) * radius;
     }
+
+    public static Vector3 GetRandomScreenToWorldPosition(float distance = 1f)
+    {
+        float randomY = Random.Range
+            (Camera.main.ScreenToWorldPoint(new Vector3(0, 0, distance)).y, Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height, distance)).y);
+        float randomX = Random.Range
+            (Camera.main.ScreenToWorldPoint(new Vector3(0, 0, distance)).x, Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, distance)).x);
+        
+        return new Vector3(randomX, randomY, distance);
+    }
 }
