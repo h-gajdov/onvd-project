@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public static City[] cities;
     public static City selectedCity;
 
+    public static Vector3 lastTarget = Vector3.zero;
     private static GameManager instance;
     
     private void OnValidate()
@@ -35,8 +36,6 @@ public class GameManager : MonoBehaviour
     public static Vector3 GetPlanetDirection(Vector3 position)
     {
         return position - planet.position;
-        // return new Vector3(position.x - planet.position.x,
-        //     position.y - planet.position.y, position.z - planet.position.z);
     }
     
     public static float GetDistanceFromPlanet(Vector3 position)
@@ -51,6 +50,11 @@ public class GameManager : MonoBehaviour
         instance.countryText.text = selectedCity.countryName;
     }
 
+    public static void SetLastTarget()
+    {
+        lastTarget = selectedCity.worldPosition;
+    }
+    
     public static void ShowCity()
     {
         GameObject citySphere = Instantiate(cityMarker);
@@ -59,7 +63,7 @@ public class GameManager : MonoBehaviour
         cityText.text = selectedCity.name;
         Destroy(citySphere, 120f);
     }
-
+    
     private void Start()
     {
         CityJSONReader.SetJSONFile(cityJson);
@@ -77,6 +81,7 @@ public class GameManager : MonoBehaviour
         }
         
         SetRandomCity();
+        lastTarget = Vector3.zero;
     }
 
     private void Update()

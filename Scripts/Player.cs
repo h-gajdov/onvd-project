@@ -26,10 +26,14 @@ public class Player : MonoBehaviour
     [SerializeField] private float gravityMultiplier = -9.81f;
     [SerializeField] private float packageLifetime = 100;
     
+    private static TrailRenderer[] trails;
+    private static float normalTrailTime;
+    
     private Transform planeTransform;
 
     public static Player instance;
-
+    private static bool move = true;
+    
     public float GravityMultiplier
     {
         get
@@ -54,6 +58,8 @@ public class Player : MonoBehaviour
         Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
         transform.rotation = lookRotation;
         moveSpeed = idleSpeed;
+        trails = transform.GetComponentsInChildren<TrailRenderer>();
+        normalTrailTime = trails[0].time;
     }
     
     private void Update()
@@ -66,6 +72,8 @@ public class Player : MonoBehaviour
     private float height = 45f;
     private void Move()
     {
+        if (!move) return;
+        
         int changesHeight = 0;
         float speed = (Input.GetKey(KeyCode.W)) ? accelerationSpeed : idleSpeed;
         float turnDirection = Input.GetAxisRaw("Horizontal");
@@ -106,6 +114,24 @@ public class Player : MonoBehaviour
         Vector3 gravityDown = GameManager.GetPlanetDirection(transform.position);
         GameObject package = Instantiate(packagePrefab, transform.position, Quaternion.identity);
         package.transform.rotation = Quaternion.LookRotation(gravityDown);
+        GameManager.SetLastTarget();
         Destroy(package, packageLifetime);
+    }
+
+    public static void SetMovement(bool value)
+    {
+        move = value;
+    }
+
+    public static void SetTrailsEternal()
+    {
+        trails[0].time = 3.402823e+38f;
+        trails[1].time = 3.402823e+38f;
+    }
+
+    public static void ResetTrails()
+    {
+        trails[0].time = normalTrailTime;
+        trails[1].time = normalTrailTime;
     }
 }

@@ -9,7 +9,7 @@ public class LookAtPlayer : MonoBehaviour
 
     private void Awake()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        player = Camera.main.transform;
     }
 
     void Update()

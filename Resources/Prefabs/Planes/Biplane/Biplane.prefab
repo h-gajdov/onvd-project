@@ -359,7 +359,7 @@ TrailRenderer:
     shadowBias: 0.5
     generateLightingData: 0
   m_MinVertexDistance: 0.1
-  m_Autodestruct: 1
+  m_Autodestruct: 0
   m_Emitting: 1
 --- !u!1 &4159632154795036920
 GameObject:
@@ -497,7 +497,7 @@ TrailRenderer:
     shadowBias: 0.5
     generateLightingData: 0
   m_MinVertexDistance: 0.1
-  m_Autodestruct: 1
+  m_Autodestruct: 0
   m_Emitting: 1
 --- !u!1 &4924720772373746208
 GameObject:

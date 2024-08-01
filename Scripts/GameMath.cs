@@ -49,11 +49,10 @@ public class GameMath
         return HaversineFormula(lat1, lat2, lng1, lng2);
     }
 
-    public static void LookAtTransform(Transform looker, Transform looked)
+    public static void LookAtTransform(Transform looker, Transform looked, bool inverted = false)
     {
-        Vector3 lookDirection = new Vector3(looker.transform.position.x - looked.transform.position.x,
-            looker.transform.position.y - looked.transform.position.y, looker.transform.position.z - looked.transform.position.z);
-        Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
+        Vector3 lookDirection = looker.transform.position - looked.transform.position;
+        Quaternion lookRotation = Quaternion.LookRotation((inverted) ? -lookDirection : lookDirection);
         looker.transform.rotation = lookRotation;
     }
     
@@ -105,5 +104,31 @@ public class GameMath
             (Camera.main.ScreenToWorldPoint(new Vector3(0, 0, distance)).x, Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0, distance)).x);
         
         return new Vector3(randomX, randomY, distance);
+    }
+
+    private static float Speed(float x, float speed)
+    {
+        float epsilon = 0.1f;
+        return (speed - epsilon) * Mathf.Sin(Mathf.PI * x) + epsilon;
+    }
+    
+    public static IEnumerator SlerpTransformToPosition(Transform a, Vector3 b, float t)
+    {
+        CameraControler.coroutineActive = true;
+        
+        float previousSpeed = -1f;
+        float startDistance = GameMath.DistanceBetweenPointsOnEarth(a.position, b);
+        for (float distance = GameMath.DistanceBetweenPointsOnEarth(a.position, b);
+             distance > 0.001f; distance = GameMath.DistanceBetweenPointsOnEarth(a.position, b))
+        {
+            float x = (startDistance - distance) / startDistance;
+            float speed = Speed(x, t);
+            a.position = Vector3.RotateTowards(a.position, b,  speed * Time.deltaTime, 0f);
+            if (previousSpeed == speed) break;
+            previousSpeed = speed;
+            yield return null;
+        }
+
+        CameraControler.coroutineActive = false;
     }
 }

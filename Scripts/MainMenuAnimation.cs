@@ -12,13 +12,14 @@ public class MainMenuAnimation : MonoBehaviour
     [SerializeField] private Transform planeEndPoint;
     [SerializeField] private Transform earth;
     
+    //trail forever lifetime 3.402823e+38
     private void Update()
     {
         float singleStep = planeSpeed * Mathf.Deg2Rad * Time.deltaTime;
         
         earth.Rotate(0f, earthSpeed * Time.deltaTime, 0f);
         
-        if (Vector3.Distance(planePivot.GetChild(0).position, planeEndPoint.position) > 0.1f)
-            planePivot.Rotate(0f, planeSpeed * Time.deltaTime, 0f);
+        // if (Vector3.Distance(planePivot.GetChild(0).position, planeEndPoint.position) > 0.1f)
+        planePivot.Rotate(0f, planeSpeed * Time.deltaTime, 0f);
     }
 }

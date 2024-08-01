@@ -1035,7 +1035,7 @@ MonoBehaviour:
   numberOfFacesPerSide: 25
   resolution: 100
   radius: 600
-  generate: 0
+  generate: 1
 --- !u!4 &604154698
 Transform:
   m_ObjectHideFlags: 0
@@ -1402,7 +1402,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cbc64698d1ea4f4b95b73ce87d16e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planet: {fileID: 604154698}
+  speed: 1
 --- !u!1 &1095149783
 GameObject:
   m_ObjectHideFlags: 0
@@ -2855,7 +2855,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132148674151424}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 645, y: 0, z: -10.3}
+  m_LocalPosition: {x: 645, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1.0000001, z: 1.0000001}
   m_Children:
   - {fileID: 1570940887}
