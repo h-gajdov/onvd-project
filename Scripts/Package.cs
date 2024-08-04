@@ -33,10 +33,9 @@ public class Package : MonoBehaviour
     private void CalculateDrop()
     {
         Coordinate packageCoordinate = Coordinate.PointToCoordinate(stopPoint);
-        packageCoordinate.Print();
         float distance =
             GameMath.DistanceBetweenCoordinatesOnEarth(packageCoordinate, GameManager.selectedCity.coordinate);
-        Debug.Log(distance.ToString() + " " + GameMath.CalculateScoreFromDistance(distance));
+        GameManager.AddScore(GameMath.CalculateScoreFromDistance(distance));
         GameManager.ShowCity();
         GameManager.SetRandomCity();
         // GameManager.SetRandomCity();

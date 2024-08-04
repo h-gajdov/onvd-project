@@ -16,7 +16,6 @@ public class CameraControler : MonoBehaviour
     {
         moving = true;
         Player.SetMovement(false);
-        Player.SetTrailsEternal();
         StartCoroutine(GameMath.SlerpTransformToPosition(transform, GameManager.lastTarget, speed));
     }
 
@@ -32,7 +31,6 @@ public class CameraControler : MonoBehaviour
 
         moving = false;
         Player.SetMovement(true);
-        Player.ResetTrails();
         transform.localPosition = idlePosition;
     }
 

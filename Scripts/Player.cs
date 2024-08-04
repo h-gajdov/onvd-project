@@ -26,10 +26,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float gravityMultiplier = -9.81f;
     [SerializeField] private float packageLifetime = 100;
     
-    private static TrailRenderer[] trails;
-    private static float normalTrailTime;
-    
-    private Transform planeTransform;
+    [HideInInspector] public Transform planeTransform;
 
     public static Player instance;
     private static bool move = true;
@@ -58,8 +55,6 @@ public class Player : MonoBehaviour
         Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
         transform.rotation = lookRotation;
         moveSpeed = idleSpeed;
-        trails = transform.GetComponentsInChildren<TrailRenderer>();
-        normalTrailTime = trails[0].time;
     }
     
     private void Update()
@@ -121,17 +116,5 @@ public class Player : MonoBehaviour
     public static void SetMovement(bool value)
     {
         move = value;
-    }
-
-    public static void SetTrailsEternal()
-    {
-        trails[0].time = 3.402823e+38f;
-        trails[1].time = 3.402823e+38f;
-    }
-
-    public static void ResetTrails()
-    {
-        trails[0].time = normalTrailTime;
-        trails[1].time = normalTrailTime;
     }
 }

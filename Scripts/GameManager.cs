@@ -23,6 +23,10 @@ public class GameManager : MonoBehaviour
 
     public static Vector3 lastTarget = Vector3.zero;
     private static GameManager instance;
+
+    public static int numberOfRounds;
+    private static int playedRounds;
+    private static float totalScore;
     
     private void OnValidate()
     {
@@ -31,6 +35,7 @@ public class GameManager : MonoBehaviour
         planet = GameObject.FindGameObjectWithTag("Planet").transform;
         cityMarker = Resources.Load("Prefabs/CityMarker/CityMarker") as GameObject;
         countryText = cityText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        playedRounds = 0;
     }
 
     public static Vector3 GetPlanetDirection(Vector3 position)
@@ -63,6 +68,18 @@ public class GameManager : MonoBehaviour
         cityText.text = selectedCity.name;
         Destroy(citySphere, 120f);
     }
+
+    public static IEnumerator InitializeGame(int rounds, GameObject plane)
+    {
+        numberOfRounds = 3;
+        yield return null;
+        GameObject p = Instantiate(plane);
+        p.transform.parent = Player.instance.transform;
+        p.transform.position = Player.instance.transform.position;
+        p.transform.localRotation = Quaternion.Euler(0f, 90f, 90f);
+        Player.instance.planeTransform = p.transform;
+        p.transform.SetSiblingIndex(0);
+    }
     
     private void Start()
     {
@@ -87,5 +104,21 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.N)) SetRandomCity();
+    }
+
+    public static void AddScore(float score)
+    {
+        totalScore += score;
+        playedRounds++;
+        Debug.Log(score.ToString() + " " + numberOfRounds.ToString() + " " + playedRounds.ToString());
+        if (playedRounds == numberOfRounds) EndGame();
+    }
+
+    private static void EndGame()
+    {
+        string name = "TEST";
+        Debug.Log(totalScore);
+        float score = totalScore / numberOfRounds;
+        LeaderboardManager.SetLeaderboardEntry(name, score);
     }
 }
