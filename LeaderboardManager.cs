@@ -103,7 +103,6 @@ public class LeaderboardManager : MonoBehaviour
                 GameObject userPrefab = Instantiate(leaderboardUserPrefab);
                 userPrefab.transform.parent = scrollViewPort;
                 uiUser.SetInfo(userPrefab);
-                uiUser.Print();
             }
         }));
     }

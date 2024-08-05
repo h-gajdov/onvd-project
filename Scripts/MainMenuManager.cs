@@ -34,6 +34,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider soundSlider;
     [SerializeField] private TMP_Dropdown resolutionsDropdown;
+    private Resolution[] availableResolutions;
+    private bool fullscreenMode;
 
     [Space] [Header("Leaderboard Panel")] 
     [SerializeField] private GameObject leaderboardUserPrefab;
@@ -59,10 +61,12 @@ public class MainMenuManager : MonoBehaviour
     private void FillResolutionsList()
     {
         resolutionsDropdown.ClearOptions();
+        availableResolutions = new Resolution[Screen.resolutions.Length];
         Resolution[] resolutions = Screen.resolutions;
         for (int i = resolutions.Length - 1; i >= 0; i--)
         {
             string text = resolutions[i].width + "x" + resolutions[i].height;
+            availableResolutions[resolutions.Length - 1 - i] = resolutions[i];
             TMP_Dropdown.OptionData data = new TMP_Dropdown.OptionData(text);
             resolutionsDropdown.options.Add(data);
         }
@@ -150,8 +154,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void ToggleFullscreen()
     {
-        Screen.fullScreen = !Screen.fullScreen;
-        Debug.Log("Changed Fullscreen");
+        Screen.fullScreen = fullscreenMode = !Screen.fullScreen;
     }
 
     public void ChangeScene()
@@ -164,5 +167,12 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.LoadScene(1);
         HideAllButtons();
         StartCoroutine(GameManager.InitializeGame(numberOfRounds, planes[selectedPlane]));
+    }
+
+    public void SelectResolution()
+    {
+        int index = resolutionsDropdown.value;
+        Resolution resolution = availableResolutions[index];
+        Screen.SetResolution(resolution.width, resolution.height, fullscreenMode);
     }
 }
