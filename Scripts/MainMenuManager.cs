@@ -11,18 +11,26 @@ public class MainMenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject buttonsPanel;
     [SerializeField] private GameObject playPanel;
+    [SerializeField] private GameObject difficultyPanel;
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameObject leaderboardPanel;
 
-    [Space]
-    [Header("Play Panel")] 
+    [Space] [Header("Play Panel")] 
     [SerializeField] private Material planeMaterial;
+    [SerializeField] private TMP_InputField roundsField;
     [SerializeField] private Image red;
+    [SerializeField] private Image playButton;
     [SerializeField] private Transform planeSelector;
     [SerializeField] private GameObject[] planes;
     private int selectedPlane = -1;
-    private int numberOfRounds;
+    private int numberOfRounds = 0;
     private Image selectedColor;
+
+    [Space] [Header("DifficultyPanel")] 
+    [SerializeField] private Image playButtonDifficulty;
+    private int difficulty = -1;
+    private bool showCountryName = true;
+    private Image selectedDifficulty;
 
     [Space] [Header("Options Panel")] 
     [SerializeField] private Image musicImage;
@@ -46,9 +54,11 @@ public class MainMenuManager : MonoBehaviour
     {
         ShowButtonsPanel();
         planeSelector.gameObject.SetActive(false);
-        selectedColor = red;
-        planeMaterial.color = planeSelector.GetComponent<Image>().color = selectedColor.color;
+        SelectColor(red);
+        planeMaterial.color = planeSelector.GetComponent<Image>().color = new Color(selectedColor.color.r, selectedColor.color.g, selectedColor.color.b, 1f);
         selectedPlane = -1;
+        numberOfRounds = 0;
+        selectedDifficulty = null;
         
         FillResolutionsList();
         
@@ -80,12 +90,31 @@ public class MainMenuManager : MonoBehaviour
         playPanel.SetActive(false);
         optionsPanel.SetActive(false);
         leaderboardPanel.SetActive(false);
+        difficultyPanel.SetActive(false);
         buttonsPanel.SetActive(false);
     }
     
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape)) ShowButtonsPanel();
+
+        EnableOrDisableButton(playButton, CheckIfCanSelectDifficulty());
+        EnableOrDisableButton(playButtonDifficulty, CheckIfCanPlay());
+    }
+
+    private void EnableOrDisableButton(Image button, bool value)
+    {
+        if (value)
+        {
+            button.color = button.GetComponentInChildren<TextMeshProUGUI>().color = Color.white;
+            button.GetComponent<Button>().enabled = true;
+        }
+        else
+        {
+            Color grey = new Color(0.4716981f, 0.4716981f, 0.4716981f);
+            button.color = button.GetComponentInChildren<TextMeshProUGUI>().color = grey;
+            button.GetComponent<Button>().enabled = false;
+        }
     }
 
     public void Play()
@@ -93,7 +122,7 @@ public class MainMenuManager : MonoBehaviour
         buttonsPanel.SetActive(false);
         playPanel.SetActive(true);
     }
-
+    
     public void Options()
     {
         buttonsPanel.SetActive(false);
@@ -114,16 +143,17 @@ public class MainMenuManager : MonoBehaviour
 
     public void ShowButtonsPanel()
     {
-        playPanel.SetActive(false);
-        optionsPanel.SetActive(false);
-        leaderboardPanel.SetActive(false);
+        HideAllButtons();
         buttonsPanel.SetActive(true);
     }
 
     public void SelectColor(Image image)
     {
-        selectedColor.GetComponent<Button>().enabled = true;
-        selectedColor.color = new Color(selectedColor.color.r, selectedColor.color.g, selectedColor.color.b, 1f);
+        if (selectedColor != null)
+        {
+            selectedColor.GetComponent<Button>().enabled = true;
+            selectedColor.color = new Color(selectedColor.color.r, selectedColor.color.g, selectedColor.color.b, 1f);
+        }
         
         Color color = image.color;
         planeMaterial.color = color;
@@ -157,22 +187,76 @@ public class MainMenuManager : MonoBehaviour
         Screen.fullScreen = fullscreenMode = !Screen.fullScreen;
     }
 
+    public void ToggleShowCountryName()
+    {
+        showCountryName = !showCountryName;
+    }
+
     public void ChangeScene()
+    {
+        SceneManager.LoadScene(1);
+        HideAllButtons();
+        StartCoroutine(GameManager.InitializeGame(numberOfRounds, planes[selectedPlane], difficulty, showCountryName));
+        //Destroy(gameObject);
+    }
+    
+    public void ShowDifficultyPanel()
+    {
+        playPanel.SetActive(false);
+        difficultyPanel.SetActive(true);
+    }
+
+    public void BackToPlay()
+    {
+        playPanel.SetActive(true);
+        difficultyPanel.SetActive(false);
+    }
+
+    private bool CheckIfCanSelectDifficulty()
     {
         if (selectedPlane == -1)
         {
             Debug.Log("Select a plane!");
-            return;
+            return false;
         }
-        SceneManager.LoadScene(1);
-        HideAllButtons();
-        StartCoroutine(GameManager.InitializeGame(numberOfRounds, planes[selectedPlane]));
+        if (numberOfRounds <= 4)
+        {
+            Debug.Log("Please enter a valid number!");
+            return false;
+        }
+
+        return true;
     }
 
+    private bool CheckIfCanPlay()
+    {
+        return difficulty != -1;
+    }
+
+    public void SetNumberOfRounds()
+    {
+        int rounds = (roundsField.text.Length > 0) ? int.Parse(roundsField.text) : 0;
+        numberOfRounds = rounds;
+    }
+    
     public void SelectResolution()
     {
         int index = resolutionsDropdown.value;
         Resolution resolution = availableResolutions[index];
         Screen.SetResolution(resolution.width, resolution.height, fullscreenMode);
+    }
+
+    public void SelectDifficulty(Image difficultyImage)
+    {
+        if (selectedDifficulty != null)
+        {
+            selectedDifficulty.color = selectedDifficulty.GetComponentInChildren<TextMeshProUGUI>().color = Color.white;
+            selectedDifficulty.GetComponent<Button>().enabled = true;
+        }
+
+        difficulty = difficultyImage.transform.GetSiblingIndex();
+        selectedDifficulty = difficultyImage;
+        selectedDifficulty.color = selectedDifficulty.GetComponentInChildren<TextMeshProUGUI>().color = new Color(0.4716981f, 0.4716981f, 0.4716981f);
+        selectedDifficulty.GetComponent<Button>().enabled = false;
     }
 }

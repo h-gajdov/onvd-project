@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 public class GameManager : MonoBehaviour
 {
     public enum Difficulty {Easy, Medium, Hard}
-    public Difficulty difficulty;
+    public static Difficulty difficulty;
     
     public static Transform planet;
     private static GameObject cityMarker;
@@ -69,9 +69,9 @@ public class GameManager : MonoBehaviour
         Destroy(citySphere, 120f);
     }
 
-    public static IEnumerator InitializeGame(int rounds, GameObject plane)
+    public static IEnumerator InitializeGame(int rounds, GameObject plane, int diff, bool showCountryName)
     {
-        numberOfRounds = 3;
+        numberOfRounds = rounds;
         yield return null;
         GameObject p = Instantiate(plane);
         p.transform.parent = Player.instance.transform;
@@ -79,11 +79,16 @@ public class GameManager : MonoBehaviour
         p.transform.localRotation = Quaternion.Euler(0f, 90f, 90f);
         Player.instance.planeTransform = p.transform;
         p.transform.SetSiblingIndex(0);
-    }
-    
-    private void Start()
-    {
-        CityJSONReader.SetJSONFile(cityJson);
+        instance.countryText.gameObject.SetActive(showCountryName);
+        
+        switch (diff)
+        {
+            case 0: difficulty = Difficulty.Easy; break;    
+            case 1: difficulty = Difficulty.Medium; break;    
+            case 2: difficulty = Difficulty.Hard; break;    
+        }
+        
+        CityJSONReader.SetJSONFile(instance.cityJson);
         switch (difficulty)
         {
             case Difficulty.Easy:

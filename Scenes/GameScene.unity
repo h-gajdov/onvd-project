@@ -2759,7 +2759,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2004c6bc62cd6cf42a19ca3846b62f02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  difficulty: 1
   cityJson: {fileID: 4900000, guid: 202dc99c287e78447bc6061ecb312d88, type: 3}
   cityText: {fileID: 1613938982}
 --- !u!4 &2062449293
