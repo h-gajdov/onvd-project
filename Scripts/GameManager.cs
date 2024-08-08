@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     private static int playedRounds;
     private static float totalScore;
     
-    private void OnValidate()
+    private void Start()
     {
         if(instance == null) instance = this;
         

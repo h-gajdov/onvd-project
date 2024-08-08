@@ -393,14 +393,15 @@ public class EarthGenerator : MonoBehaviour
     }
     
     private void OnValidate()
-    {
-        instance = this;
-        FillFaces();
-        GenerateMesh();
+    { 
+       instance = this;
+       FillFaces();
+       GenerateMesh();
     }
 
     private void Start()
     {
+       instance = this;
        FillCountries();
     }
 }
