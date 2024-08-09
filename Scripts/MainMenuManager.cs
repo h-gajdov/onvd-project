@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class MainMenuManager : MonoBehaviour
@@ -14,6 +15,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject difficultyPanel;
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameObject leaderboardPanel;
+    [SerializeField] private GameObject explanationPanel;
 
     [Space] [Header("Play Panel")] 
     [SerializeField] private Material planeMaterial;
@@ -49,6 +51,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject leaderboardUserPrefab;
     [SerializeField] private Transform scrollViewport;
     [SerializeField] private Sprite[] medals;
+
+    public static MainMenuManager instance;
     
     private void Start()
     {
@@ -59,11 +63,13 @@ public class MainMenuManager : MonoBehaviour
         selectedPlane = -1;
         numberOfRounds = 0;
         selectedDifficulty = null;
+        instance = this;
         
         FillResolutionsList();
         
         LeaderboardUser.SetSprites(medals[0], medals[1], medals[2]);
         LeaderboardManager.GetLeaderboard(leaderboardUserPrefab, scrollViewport);
+        OnHover.SetMouseFollower(explanationPanel);
         
         DontDestroyOnLoad(gameObject);
     }

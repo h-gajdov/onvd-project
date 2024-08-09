@@ -104,6 +104,8 @@ public class GameManager : MonoBehaviour
         
         SetRandomCity();
         lastTarget = Vector3.zero;
+
+        Destroy(MainMenuManager.instance.gameObject);
     }
 
     private void Update()
