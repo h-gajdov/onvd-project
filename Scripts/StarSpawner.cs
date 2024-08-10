@@ -14,7 +14,6 @@ public class StarSpawner : MonoBehaviour
     [SerializeField] private float maxIntensity = 5f;
     [SerializeField] private int seed = 0;
     [SerializeField] private int numberOfStaticStars = 10;
-    [SerializeField] private int numberOfMovingStars = 10;
     [SerializeField] private int numberOfComets = 10;
 
     private float timer = 0f;

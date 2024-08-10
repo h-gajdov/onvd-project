@@ -41,7 +41,7 @@ public class Coordinate
     public float GetHeight()
     {
         int column = Mathf.FloorToInt((longitude + 180) / 90);
-        if (column > 3) column = 3;
+        column = (column > 3) ? 3 : column;
         int row = (latitude < 0) ? 1 : 0;
         int index = row * 4 + column;
         float valX = longitude - column * 90;

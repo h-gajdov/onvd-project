@@ -117,9 +117,9 @@ public class GameMath
         CameraControler.coroutineActive = true;
         
         float previousSpeed = -1f;
-        float startDistance = GameMath.DistanceBetweenPointsOnEarth(a.position, b);
-        for (float distance = GameMath.DistanceBetweenPointsOnEarth(a.position, b);
-             distance > 0.001f; distance = GameMath.DistanceBetweenPointsOnEarth(a.position, b))
+        float startDistance = DistanceBetweenPointsOnEarth(a.position, b);
+        for (float distance = DistanceBetweenPointsOnEarth(a.position, b);
+             distance > 0.001f; distance = DistanceBetweenPointsOnEarth(a.position, b))
         {
             float x = (startDistance - distance) / startDistance;
             float speed = Speed(x, t);

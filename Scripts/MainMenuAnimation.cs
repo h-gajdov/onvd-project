@@ -12,7 +12,6 @@ public class MainMenuAnimation : MonoBehaviour
     [SerializeField] private Transform planeEndPoint;
     [SerializeField] private Transform earth;
     
-    //trail forever lifetime 3.402823e+38
     private void Update()
     {
         earth.Rotate(0f, earthSpeed * Time.deltaTime, 0f);
