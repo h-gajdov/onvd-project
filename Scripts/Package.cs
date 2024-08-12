@@ -9,6 +9,7 @@ public class Package : MonoBehaviour
     [SerializeField] private Animator anim;
 
     private Vector3 stopPoint;
+    private bool landed = false;
     private float stopDistance;
     
     private void Start()
@@ -21,13 +22,15 @@ public class Package : MonoBehaviour
     private void Update()
     {
         float planetDistance = GameManager.GetDistanceFromPlanet(transform.position);
-        if (planetDistance > stopDistance) return;
-        
+        if (planetDistance > stopDistance || landed) return;
+
+        landed = true;
         transform.position = stopPoint;
         anim.SetBool("hasFallen", true);
         CalculateDrop();
         Destroy(rb);
-        Destroy(this);
+        Debug.Log(Camera.main.WorldToScreenPoint(transform.position));
+        // Destroy(this);
     }
 
     private void CalculateDrop()
@@ -36,8 +39,8 @@ public class Package : MonoBehaviour
         float distance =
             GameMath.DistanceBetweenCoordinatesOnEarth(packageCoordinate, GameManager.selectedCity.coordinate);
         GameManager.AddScore(GameMath.CalculateScoreFromDistance(distance));
+        StartCoroutine(UIManager.ShowCityButtons());
         GameManager.ShowCity();
-        GameManager.SetRandomCity();
         // GameManager.SetRandomCity();
     }
     

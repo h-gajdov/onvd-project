@@ -28,7 +28,7 @@ public class LeaderboardUser
     {
         TextMeshProUGUI[] texts = userPrefab.GetComponentsInChildren<TextMeshProUGUI>();
         texts[0].text = position;
-        texts[1].text = score.ToString();
+        texts[1].text = score.ToString().Replace(',', '.');
         texts[2].text = name;
 
         string colorHex = "#000000";

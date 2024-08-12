@@ -14,6 +14,7 @@ public class CameraControler : MonoBehaviour
     
     private void MoveCameraToLastTarget()
     {
+        StopAllCoroutines();
         moving = true;
         Player.SetMovement(false);
         StartCoroutine(GameMath.SlerpTransformToPosition(transform, GameManager.lastTarget, speed));
@@ -21,6 +22,7 @@ public class CameraControler : MonoBehaviour
 
     private void MoveCameraToPlayer()
     {
+        StopAllCoroutines();
         StartCoroutine(GameMath.SlerpTransformToPosition(transform, Player.instance.transform.position, speed));
         StartCoroutine(ResetPlayer());
     }

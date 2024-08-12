@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour
 
     public static void SetRandomCity()
     {
+        instance.StartCoroutine(UIManager.HideCityButtons());
         selectedCity = cities[Random.Range(0, cities.Length)];
         instance.cityText.text = selectedCity.name;
         instance.countryText.text = selectedCity.countryName;
@@ -80,6 +81,9 @@ public class GameManager : MonoBehaviour
         Player.instance.planeTransform = p.transform;
         p.transform.SetSiblingIndex(0);
         instance.countryText.gameObject.SetActive(showCountryName);
+        
+        UIManager.SetRoundsUI(playedRounds, numberOfRounds);
+        UIManager.SetScoreUI(0f);
         
         switch (diff)
         {
@@ -117,7 +121,9 @@ public class GameManager : MonoBehaviour
     {
         totalScore += score;
         playedRounds++;
-        Debug.Log(score.ToString() + " " + numberOfRounds.ToString() + " " + playedRounds.ToString());
+        UIManager.SetRoundsUI(playedRounds, numberOfRounds);
+        UIManager.SetScoreUI(totalScore);
+        UIManager.ShowFeedbackScore(score);
         if (playedRounds == numberOfRounds) EndGame();
     }
 

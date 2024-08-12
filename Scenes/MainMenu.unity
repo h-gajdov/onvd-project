@@ -2024,7 +2024,6 @@ MonoBehaviour:
   maxIntensity: 5
   seed: 6
   numberOfStaticStars: 20
-  numberOfMovingStars: 10
   numberOfComets: 10
 --- !u!4 &343459706
 Transform:
