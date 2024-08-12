@@ -142,6 +142,7 @@ Shader "Unlit/EarthUnlit"
             float4 calculateOcean(v2f i)
             {
                 float2 uv = pointOnSphereToUV(i.worldPos);
+                
                 float2 uvX = i.worldPos.zy;
                 float2 uvY = i.worldPos.xz;
                 float2 uvZ = i.worldPos.xy;
@@ -201,8 +202,6 @@ Shader "Unlit/EarthUnlit"
                 
                 if(height01.r == 0) {
                     float3 oceanLight = max(0, dot(i.worldNormal, lightDir)) * _LightIntensity / 4;
-                    float3 viewDir = normalize(i.worldPos - _WorldSpaceCameraPos.xyz);
-                    // return calculateOcean(i) + float4(oceanLight, 1);
                     
                     return calculateOcean(i) + float4(oceanLight.rgb, 1);
                 }
