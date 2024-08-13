@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,14 @@ public class LeaderboardUser
     private const string bronzeHex = "#CD7F32"; 
     
     private static Sprite[] medals = new Sprite[3];
+
+    public float Score
+    {
+        get
+        {
+            return score;
+        }
+    }
     
     public LeaderboardUser(string position, float score, string name)
     {
@@ -76,13 +85,15 @@ public class LeaderboardUser
 public class LeaderboardManager : MonoBehaviour
 {
     private static string publicKey = "891189cd306fc2c810a6d2bbb56d7d6ea00ea764c9bf9f7c341c42520fad503b";
-
+    public static List<LeaderboardUser> users = new List<LeaderboardUser>();
+    
     public static void GetLeaderboard(GameObject leaderboardUserPrefab, Transform scrollViewPort)
     {
         LeaderboardCreator.GetLeaderboard(publicKey, ((msg) =>
         {
-            foreach (var user in msg)
+            for (int i = 0; i < msg.Length; i++)
             {
+                var user = msg[i];
                 string position;
                 switch (user.Rank)
                 {
@@ -99,19 +110,52 @@ public class LeaderboardManager : MonoBehaviour
                         position = user.Rank.ToString() + "TH";
                         break;
                 }
+
                 LeaderboardUser uiUser = new LeaderboardUser(position, user.Score / 10f, user.Username);
+                users.Add(uiUser);
+                
+                if (i >= 100) continue;
+                
                 GameObject userPrefab = Instantiate(leaderboardUserPrefab);
                 userPrefab.transform.parent = scrollViewPort;
-                uiUser.SetInfo(userPrefab);
+                uiUser.SetInfo(userPrefab);    
             }
         }));
     }
 
     public static void SetLeaderboardEntry(string username, float score)
     {
-        LeaderboardCreator.UploadNewEntry(publicKey, username, (int)(score*100), (msg) =>
+        float mult = (float)Math.Round(score, 1);
+        LeaderboardCreator.UploadNewEntry(publicKey, username, (int)(mult*10), (msg) =>
         {
             Debug.Log("New entry added!");
         });
+    }
+
+    public static int GetRankOfScore(float score)
+    {
+        int min = 0;
+        int max = users.Count - 1;
+        int mid = 0;
+        bool isSmaller = false;
+        while (min <= max)
+        {
+            mid = (min + max) / 2;
+            if (score == users[mid].Score)
+            {
+                break;
+            }
+            else if (score < users[mid].Score)
+            {
+                min = mid + 1;
+                isSmaller = true;
+            }
+            else
+            {
+                max = mid - 1;
+                isSmaller = false;
+            }
+        }
+        return (isSmaller) ? mid + 2 : mid + 1;
     }
 }

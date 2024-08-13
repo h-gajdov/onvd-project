@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
@@ -14,19 +15,22 @@ public class GameManager : MonoBehaviour
     private static GameObject cityMarker;
     public static float planetRadius = 600f;
 
-    public TextAsset cityJson;
-    public TextMeshProUGUI cityText;
+    [SerializeField] private TextAsset cityJson;
+    [SerializeField] private TextMeshProUGUI cityText;
+    [SerializeField] private GameObject winPanel;
     private TextMeshProUGUI countryText;
 
     public static City[] cities;
     public static City selectedCity;
 
     public static Vector3 lastTarget = Vector3.zero;
-    private static GameManager instance;
+    public static GameManager instance;
 
     public static int numberOfRounds;
     private static int playedRounds;
     private static float totalScore;
+
+    [SerializeField] private GameSettings gameSettings;
     
     private void Start()
     {
@@ -36,6 +40,9 @@ public class GameManager : MonoBehaviour
         cityMarker = Resources.Load("Prefabs/CityMarker/CityMarker") as GameObject;
         countryText = cityText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         playedRounds = 0;
+        totalScore = 0;
+
+        StartCoroutine(InitializeGame(gameSettings));
     }
 
     public static Vector3 GetPlanetDirection(Vector3 position)
@@ -69,9 +76,14 @@ public class GameManager : MonoBehaviour
         cityText.text = selectedCity.name;
         Destroy(citySphere, 120f);
     }
-
-    public static IEnumerator InitializeGame(int rounds, GameObject plane, int diff, bool showCountryName)
+    
+    public static IEnumerator InitializeGame(GameSettings settings)
     {
+        int rounds = settings.rounds;
+        GameObject plane = settings.plane;
+        int diff = settings.diff;
+        bool showCountryName = settings.showCountryName;
+        
         numberOfRounds = rounds;
         yield return null;
         GameObject p = Instantiate(plane);
@@ -109,8 +121,8 @@ public class GameManager : MonoBehaviour
         
         SetRandomCity();
         lastTarget = Vector3.zero;
-
-        Destroy(MainMenuManager.instance.gameObject);
+        
+        if(MainMenuManager.instance != null) Destroy(MainMenuManager.instance.gameObject);
     }
 
     private void Update()
@@ -125,14 +137,14 @@ public class GameManager : MonoBehaviour
         UIManager.SetRoundsUI(playedRounds, numberOfRounds);
         UIManager.SetScoreUI(totalScore);
         UIManager.ShowFeedbackScore(score);
-        if (playedRounds == numberOfRounds) EndGame();
+        if (playedRounds == numberOfRounds) instance.StartCoroutine(EndGame());
     }
 
-    private static void EndGame()
+    private static IEnumerator EndGame()
     {
-        string name = "TEST";
-        Debug.Log(totalScore);
         float score = totalScore / numberOfRounds;
-        LeaderboardManager.SetLeaderboardEntry(name, score);
+        instance.winPanel.SetActive(true);
+        yield return null;
+        WinPanelManager.SetProperties(totalScore, score);
     }
 }

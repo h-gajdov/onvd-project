@@ -74,6 +74,6 @@ public class UIManager : MonoBehaviour
     {
         GameObject feedback = Instantiate(instance.feedbackScorePefab, instance.feedbackParent);
         feedback.GetComponentInChildren<TextMeshProUGUI>().text = "+" + score.ToString("F1").Replace(',', '.');
-        Destroy(feedback, 1f);
+        Destroy(feedback, 2f);
     }
 }

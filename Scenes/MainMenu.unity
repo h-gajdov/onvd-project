@@ -7847,6 +7847,7 @@ MonoBehaviour:
   optionsPanel: {fileID: 1743553783}
   leaderboardPanel: {fileID: 2032081547}
   explanationPanel: {fileID: 239695708}
+  gameSettings: {fileID: 11400000, guid: 5d94e17ad2eed3248b76b5c2d8587cc9, type: 2}
   planeMaterial: {fileID: 2100000, guid: 91785641a50f4784aa5ff3f1dd4242ec, type: 2}
   roundsField: {fileID: 662571884}
   red: {fileID: 617032897}

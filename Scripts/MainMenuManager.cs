@@ -16,6 +16,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameObject leaderboardPanel;
     [SerializeField] private GameObject explanationPanel;
+    [SerializeField] private GameSettings gameSettings;
 
     [Space] [Header("Play Panel")] 
     [SerializeField] private Material planeMaterial;
@@ -108,7 +109,7 @@ public class MainMenuManager : MonoBehaviour
         EnableOrDisableButton(playButtonDifficulty, CheckIfCanPlay());
     }
 
-    private void EnableOrDisableButton(Image button, bool value)
+    public static void EnableOrDisableButton(Image button, bool value)
     {
         if (value)
         {
@@ -202,7 +203,7 @@ public class MainMenuManager : MonoBehaviour
     {
         SceneManager.LoadScene(1);
         HideAllButtons();
-        StartCoroutine(GameManager.InitializeGame(numberOfRounds, planes[selectedPlane], difficulty, showCountryName));
+        gameSettings.SetProperties(numberOfRounds, planes[selectedPlane], difficulty, showCountryName);
         //Destroy(gameObject);
     }
     
