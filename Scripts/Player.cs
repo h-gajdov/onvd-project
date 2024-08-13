@@ -117,4 +117,14 @@ public class Player : MonoBehaviour
     {
         move = value;
     }
+
+    public static Coordinate GetPlayerCoords()
+    {
+        return Coordinate.PointToCoordinate(instance.transform.position);
+    }
+
+    public static float GetElevation()
+    {
+        return Vector3.Distance(instance.transform.position, GameManager.planet.position);
+    }
 }

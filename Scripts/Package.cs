@@ -29,7 +29,6 @@ public class Package : MonoBehaviour
         anim.SetBool("hasFallen", true);
         CalculateDrop();
         Destroy(rb);
-        Debug.Log(Camera.main.WorldToScreenPoint(transform.position));
         // Destroy(this);
     }
 

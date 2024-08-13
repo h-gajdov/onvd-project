@@ -26,6 +26,9 @@ public class Crosshair : MonoBehaviour
 
     private void Update()
     {
+        if (Player.GetElevation() <= 631f) transform.position = GameMath.FixVertexOnSphere(transform.position, 10f);
+        else transform.localPosition = new Vector3(0f, 0f, -21f);
+        
         if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
         {
             crosshairImage.SetActive(true);
@@ -68,13 +71,6 @@ public class Crosshair : MonoBehaviour
             trianglesList.Add(i+2);
         }
         int[] triangles = trianglesList.ToArray();
-        
-        List<Vector3> normalsList = new List<Vector3> { };
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            normalsList.Add(transform.forward);
-        }
-        Vector3[] normals = normalsList.ToArray();
         
         Vector2[] uvs = new Vector2[vertices.Length];
         for (int i = 0; i < uvs.Length; i++)

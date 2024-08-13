@@ -81,7 +81,8 @@ public class GameManager : MonoBehaviour
         Player.instance.planeTransform = p.transform;
         p.transform.SetSiblingIndex(0);
         instance.countryText.gameObject.SetActive(showCountryName);
-        
+
+        MapController.InstantiatePlane(plane);
         UIManager.SetRoundsUI(playedRounds, numberOfRounds);
         UIManager.SetScoreUI(0f);
         

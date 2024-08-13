@@ -106,6 +106,13 @@ public class GameMath
         return new Vector3(randomX, randomY, distance);
     }
 
+    public static Vector3 GetCanvasPositionFromCameraPosition(Vector3 pixels)
+    {
+        float halfWidth = Screen.width / 2f;
+        float halfHiehgt = Screen.height / 2f;
+        return new Vector3(pixels.x - halfWidth, pixels.y - halfHiehgt, 0f);
+    }
+
     private static float Speed(float x, float speed)
     {
         float epsilon = 0.1f;

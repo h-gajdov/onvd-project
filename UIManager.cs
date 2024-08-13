@@ -29,12 +29,7 @@ public class UIManager : MonoBehaviour
         
         StartCoroutine(HideCityButtons());
     }
-
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.T)) ShowFeedbackScore(95.3f);
-    }
-
+    
     public static IEnumerator HideCityButtons()
     {
         while (seeCity.position.x > -149f)
