@@ -40,6 +40,8 @@ public class Package : MonoBehaviour
         GameManager.AddScore(GameMath.CalculateScoreFromDistance(distance));
         StartCoroutine(UIManager.ShowCityButtons());
         GameManager.ShowCity();
+        CameraControler.canTakeInput = true;
+        GameManager.canTakeCity = true;
         // GameManager.SetRandomCity();
     }
     

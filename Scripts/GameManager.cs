@@ -30,6 +30,8 @@ public class GameManager : MonoBehaviour
     private static int playedRounds;
     private static float totalScore;
 
+    public static bool canTakeCity = false;
+
     [SerializeField] private GameSettings gameSettings;
     
     private void Start()
@@ -41,6 +43,7 @@ public class GameManager : MonoBehaviour
         countryText = cityText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         playedRounds = 0;
         totalScore = 0;
+        canTakeCity = false;
 
         StartCoroutine(InitializeGame(gameSettings));
     }
@@ -57,6 +60,8 @@ public class GameManager : MonoBehaviour
 
     public static void SetRandomCity()
     {
+        canTakeCity = false;
+        CameraControler.canTakeInput = false;
         instance.StartCoroutine(UIManager.HideCityButtons());
         selectedCity = cities[Random.Range(0, cities.Length)];
         instance.cityText.text = selectedCity.name;
@@ -127,7 +132,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N)) SetRandomCity();
+        if (Input.GetKeyDown(KeyCode.N) && canTakeCity) SetRandomCity();
     }
 
     public static void AddScore(float score)

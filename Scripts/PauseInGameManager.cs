@@ -20,6 +20,7 @@ public class PauseInGameManager : MonoBehaviour
 
     private void Pause()
     {
+        // Player.instance
         pausePanel.SetActive(!pausePanel.activeInHierarchy);
         Time.timeScale = (pausePanel.activeInHierarchy) ? 0 : 1;
     }

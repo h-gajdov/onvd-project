@@ -25,6 +25,10 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Image playButton;
     [SerializeField] private Transform planeSelector;
     [SerializeField] private GameObject[] planes;
+    
+    public Transform feedback;
+    public GameObject errorPrefab;
+    
     private int selectedPlane = -1;
     private int numberOfRounds = 0;
     private Image selectedColor;
@@ -221,20 +225,18 @@ public class MainMenuManager : MonoBehaviour
 
     private bool CheckIfCanSelectDifficulty()
     {
-        if (selectedPlane == -1)
-        {
-            Debug.Log("Select a plane!");
-            return false;
-        }
-        if (numberOfRounds <= 4)
-        {
-            Debug.Log("Please enter a valid number!");
-            return false;
-        }
-
+        if (selectedPlane == -1 || numberOfRounds <= 4) return false;
         return true;
     }
 
+    public static string GetErrorMessage()
+    {
+        if (instance.selectedPlane == -1) return ErrorMesages.planeError;
+        if (instance.numberOfRounds <= 4) return ErrorMesages.numberOfCitiesError;
+        if (instance.difficulty == -1) return ErrorMesages.difficultyError;
+        return "";
+    }
+    
     private bool CheckIfCanPlay()
     {
         return difficulty != -1;
@@ -266,4 +268,16 @@ public class MainMenuManager : MonoBehaviour
         selectedDifficulty.color = selectedDifficulty.GetComponentInChildren<TextMeshProUGUI>().color = new Color(0.4716981f, 0.4716981f, 0.4716981f);
         selectedDifficulty.GetComponent<Button>().enabled = false;
     }
+
+    public void HoverSound(GameObject obj)
+    {
+        obj.GetComponent<AudioSource>().Play();
+    }
+}
+
+public class ErrorMesages
+{
+    public static string planeError = "Select one of the plane variants!";
+    public static string numberOfCitiesError = "Enter a number larger than 4 for the number of cities!";
+    public static string difficultyError = "Select a difficulty to play with!";
 }

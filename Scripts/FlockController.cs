@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public class FlockController : MonoBehaviour
 {
-    [SerializeField] private float speed = 2f;
+    [SerializeField] private float speed = 5f;
     [SerializeField] private float flyHeight = 10f;
 
     private Vector3 point;

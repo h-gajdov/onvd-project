@@ -11,6 +11,7 @@ public class CameraControler : MonoBehaviour
     private Vector3 idlePosition;
     
     public static bool coroutineActive = false;
+    public static bool canTakeInput = false;
     
     private void MoveCameraToLastTarget()
     {
@@ -39,12 +40,15 @@ public class CameraControler : MonoBehaviour
     private void Start()
     {
         idlePosition = transform.localPosition;
+        canTakeInput = false;
     }
     
     private void Update()
     {
         GameMath.LookAtTransform(transform , GameManager.planet, true);
 
+        if (!canTakeInput) return;
+        
         if (Input.GetKeyDown(KeyCode.F)) MoveCameraToLastTarget();
         if (moving && Input.GetKeyDown(KeyCode.N)) MoveCameraToPlayer();
     }
