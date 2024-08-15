@@ -7,13 +7,17 @@ public class Package : MonoBehaviour
 {
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Animator anim;
-
+    private AudioSource source;
+    
     private Vector3 stopPoint;
     private bool landed = false;
     private float stopDistance;
     
     private void Start()
     {
+        source = GetComponent<AudioSource>();
+        source.volume = OptionsData.sfxVolume;
+        
         stopPoint = CalculateStopPoint();
         stopDistance = CalculateStopDistance();
         rb.AddForce(GameManager.GetPlanetDirection(transform.position) * Player.instance.GravityMultiplier);
@@ -29,7 +33,6 @@ public class Package : MonoBehaviour
         anim.SetBool("hasFallen", true);
         CalculateDrop();
         Destroy(rb);
-        // Destroy(this);
     }
 
     private void CalculateDrop()
@@ -42,7 +45,6 @@ public class Package : MonoBehaviour
         GameManager.ShowCity();
         CameraControler.canTakeInput = true;
         GameManager.canTakeCity = true;
-        // GameManager.SetRandomCity();
     }
     
     private float CalculateStopDistance()

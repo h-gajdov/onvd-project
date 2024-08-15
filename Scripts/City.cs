@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SimpleJSON;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CityJSONReader
 {
@@ -71,6 +73,18 @@ public class CityJSONReader
     public static bool isPopulatedPlace(int index)
     {
         return root[index]["properties"]["featurecla"].Value == "Populated place";
+    }
+
+    //Knuth shuffle algorithm
+    public static void ShuffleCities(City[] cities)
+    {
+        for (int i = 0; i < cities.Length; i++)
+        {
+            City tmp = cities[i];
+            int rng = Random.Range(i, cities.Length);
+            cities[i] = cities[rng];
+            cities[rng] = tmp;
+        }
     }
 }
 

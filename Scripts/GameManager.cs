@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
     private static float totalScore;
 
     public static bool canTakeCity = false;
+    private static int cityIndex = 0;
 
     [SerializeField] private GameSettings gameSettings;
     
@@ -63,7 +64,9 @@ public class GameManager : MonoBehaviour
         canTakeCity = false;
         CameraControler.canTakeInput = false;
         instance.StartCoroutine(UIManager.HideCityButtons());
-        selectedCity = cities[Random.Range(0, cities.Length)];
+        
+        selectedCity = cities[cityIndex++];
+        cityIndex = (cityIndex >= cities.Length) ? 0 : cityIndex;
         instance.cityText.text = selectedCity.name;
         instance.countryText.text = selectedCity.countryName;
     }
@@ -123,6 +126,7 @@ public class GameManager : MonoBehaviour
                 cities = CityJSONReader.ReadHardCities();
                 break;
         }
+        CityJSONReader.ShuffleCities(cities);
         
         SetRandomCity();
         lastTarget = Vector3.zero;

@@ -16,6 +16,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameObject leaderboardPanel;
     [SerializeField] private GameObject explanationPanel;
+    [SerializeField] private AudioSource musicSource;
     [SerializeField] private GameSettings gameSettings;
 
     [Space] [Header("Play Panel")] 
@@ -50,6 +51,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Slider soundSlider;
     [SerializeField] private TMP_Dropdown resolutionsDropdown;
     private Resolution[] availableResolutions;
+    private Resolution selectedResolution;
     private bool fullscreenMode;
 
     [Space] [Header("Leaderboard Panel")] 
@@ -75,6 +77,7 @@ public class MainMenuManager : MonoBehaviour
         LeaderboardUser.SetSprites(medals[0], medals[1], medals[2]);
         LeaderboardManager.GetLeaderboard(leaderboardUserPrefab, scrollViewport);
         OnHover.SetMouseFollower(explanationPanel);
+        AudioManager.UpdateSFXVolume(soundSlider.value);
         
         DontDestroyOnLoad(gameObject);
     }
@@ -94,6 +97,7 @@ public class MainMenuManager : MonoBehaviour
 
         string label = resolutions[resolutions.Length - 1].width + "x" + resolutions[resolutions.Length - 1].height;
         resolutionsDropdown.captionText.text = label;
+        selectedResolution = availableResolutions[0];
     }
 
     private void HideAllButtons()
@@ -185,11 +189,13 @@ public class MainMenuManager : MonoBehaviour
 
     public void OnMusicChange()
     {
+        musicSource.volume = musicSlider.value;
         musicImage.sprite = (musicSlider.value == 0) ? crossedMusic : uncrossedMusic;
     }
 
     public void OnSoundChange()
     {
+        AudioManager.UpdateSFXVolume(soundSlider.value);
         soundImage.sprite = (soundSlider.value == 0) ? crossedSound : uncrossedSound;
     }
 
@@ -251,8 +257,13 @@ public class MainMenuManager : MonoBehaviour
     public void SelectResolution()
     {
         int index = resolutionsDropdown.value;
-        Resolution resolution = availableResolutions[index];
-        Screen.SetResolution(resolution.width, resolution.height, fullscreenMode);
+        selectedResolution = availableResolutions[index];
+        Screen.SetResolution(selectedResolution.width, selectedResolution.height, fullscreenMode);
+    }
+
+    public void Apply()
+    {
+        OptionsData.ApplySettings(soundSlider.value, musicSlider.value, fullscreenMode, selectedResolution);
     }
 
     public void SelectDifficulty(Image difficultyImage)
@@ -267,11 +278,6 @@ public class MainMenuManager : MonoBehaviour
         selectedDifficulty = difficultyImage;
         selectedDifficulty.color = selectedDifficulty.GetComponentInChildren<TextMeshProUGUI>().color = new Color(0.4716981f, 0.4716981f, 0.4716981f);
         selectedDifficulty.GetComponent<Button>().enabled = false;
-    }
-
-    public void HoverSound(GameObject obj)
-    {
-        obj.GetComponent<AudioSource>().Play();
     }
 }
 

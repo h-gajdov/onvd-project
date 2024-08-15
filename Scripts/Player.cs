@@ -30,6 +30,9 @@ public class Player : MonoBehaviour
 
     public static Player instance;
     private static bool move = true;
+
+    private AudioSource source;
+    private float startSoundVolume;
     
     public float GravityMultiplier
     {
@@ -55,6 +58,10 @@ public class Player : MonoBehaviour
         Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
         transform.rotation = lookRotation;
         moveSpeed = idleSpeed;
+
+        source = GetComponent<AudioSource>();
+        startSoundVolume = source.volume;
+        source.volume = startSoundVolume * OptionsData.sfxVolume;
     }
     
     private void Update()

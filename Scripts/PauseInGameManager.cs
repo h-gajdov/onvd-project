@@ -7,7 +7,8 @@ using UnityEngine.SceneManagement;
 public class PauseInGameManager : MonoBehaviour
 {
     [SerializeField] private GameObject pausePanel;
-
+    [SerializeField] private GameObject optionsPanel;
+    
     private void Start()
     {
         pausePanel.SetActive(false);
@@ -31,6 +32,22 @@ public class PauseInGameManager : MonoBehaviour
         Time.timeScale = 1;
     }
 
+    public void Options()
+    {
+        optionsPanel.SetActive(true);
+    }
+
+    public void Back()
+    {
+        optionsPanel.SetActive(false);
+    }
+
+    public void Apply()
+    {
+        optionsPanel.SetActive(false);
+        Debug.Log("IMPLEMENT APPLY BUTTON");
+    }
+    
     public void ReturnToMenu()
     {
         Time.timeScale = 1;
