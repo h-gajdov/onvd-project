@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -16,6 +17,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameObject leaderboardPanel;
     [SerializeField] private GameObject explanationPanel;
+    [SerializeField] private GameObject aboutPanel;
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private GameSettings gameSettings;
 
@@ -43,6 +45,8 @@ public class MainMenuManager : MonoBehaviour
     [Space] [Header("Options Panel")] 
     [SerializeField] private Image musicImage;
     [SerializeField] private Image soundImage;
+    [SerializeField] private Image applyButton;
+    [SerializeField] private Image setToDefaultButton;
     [SerializeField] private Sprite crossedMusic;
     [SerializeField] private Sprite uncrossedMusic;
     [SerializeField] private Sprite crossedSound;
@@ -50,9 +54,11 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider soundSlider;
     [SerializeField] private TMP_Dropdown resolutionsDropdown;
-    private Resolution[] availableResolutions;
-    private Resolution selectedResolution;
+    [SerializeField] private Toggle fullScreenToggle;
+    public static Resolution[] availableResolutions;
+    private int selectedResolution;
     private bool fullscreenMode;
+    private bool hasChange = false;
 
     [Space] [Header("Leaderboard Panel")] 
     [SerializeField] private GameObject leaderboardUserPrefab;
@@ -80,24 +86,24 @@ public class MainMenuManager : MonoBehaviour
         AudioManager.UpdateSFXVolume(soundSlider.value);
         
         DontDestroyOnLoad(gameObject);
+        LoadSettingsData();
     }
 
     private void FillResolutionsList()
     {
         resolutionsDropdown.ClearOptions();
-        availableResolutions = new Resolution[Screen.resolutions.Length];
-        Resolution[] resolutions = Screen.resolutions;
-        for (int i = resolutions.Length - 1; i >= 0; i--)
+        availableResolutions = Screen.resolutions;
+        // availableResolutions = Screen.resolutions.Where(resolution => resolution.refreshRate == 60).ToArray();
+        Array.Reverse(availableResolutions);
+        foreach (Resolution res in availableResolutions)
         {
-            string text = resolutions[i].width + "x" + resolutions[i].height;
-            availableResolutions[resolutions.Length - 1 - i] = resolutions[i];
+            string text = res.width + "x" + res.height;
             TMP_Dropdown.OptionData data = new TMP_Dropdown.OptionData(text);
             resolutionsDropdown.options.Add(data);
         }
 
-        string label = resolutions[resolutions.Length - 1].width + "x" + resolutions[resolutions.Length - 1].height;
+        string label = availableResolutions[0].width + "x" + availableResolutions[0].height;
         resolutionsDropdown.captionText.text = label;
-        selectedResolution = availableResolutions[0];
     }
 
     private void HideAllButtons()
@@ -107,14 +113,17 @@ public class MainMenuManager : MonoBehaviour
         leaderboardPanel.SetActive(false);
         difficultyPanel.SetActive(false);
         buttonsPanel.SetActive(false);
+        aboutPanel.SetActive(false);
     }
     
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape)) ShowButtonsPanel();
-
+        
         EnableOrDisableButton(playButton, CheckIfCanSelectDifficulty());
         EnableOrDisableButton(playButtonDifficulty, CheckIfCanPlay());
+        EnableOrDisableButton(applyButton, hasChange);
+        EnableOrDisableButton(setToDefaultButton, OptionsData.CanChangeToDefault());
     }
 
     public static void EnableOrDisableButton(Image button, bool value)
@@ -140,8 +149,31 @@ public class MainMenuManager : MonoBehaviour
     
     public void Options()
     {
+        LoadSettingsData();
+        
         buttonsPanel.SetActive(false);
         optionsPanel.SetActive(true);
+
+        hasChange = false;
+    }
+
+    public void SetToDefault()
+    {
+        OptionsData.SetDefaultSettings();
+        LoadSettingsData();
+        Apply();
+    }
+
+    public void LoadSettingsData()
+    {
+        OptionsData.LoadSettings();
+        
+        soundSlider.value = OptionsData.sfxVolume;
+        musicSlider.value = OptionsData.musicVolume;
+        Screen.fullScreen = OptionsData.fullscreen;
+        fullScreenToggle.isOn = OptionsData.fullscreen;
+        fullscreenMode = OptionsData.fullscreen;
+        SelectResolution(OptionsData.resolutionIndex);
     }
 
     public void Leaderborad()
@@ -152,7 +184,6 @@ public class MainMenuManager : MonoBehaviour
 
     public void Exit()
     {
-        Debug.Log("Quit Game!");
         Application.Quit();
     }
 
@@ -191,17 +222,22 @@ public class MainMenuManager : MonoBehaviour
     {
         musicSource.volume = musicSlider.value;
         musicImage.sprite = (musicSlider.value == 0) ? crossedMusic : uncrossedMusic;
+        OptionsData.UpdateSound(soundSlider.value, musicSlider.value);
+        hasChange = true;
     }
 
     public void OnSoundChange()
     {
         AudioManager.UpdateSFXVolume(soundSlider.value);
         soundImage.sprite = (soundSlider.value == 0) ? crossedSound : uncrossedSound;
+        OptionsData.UpdateSound(soundSlider.value, musicSlider.value);
+        hasChange = true;
     }
 
     public void ToggleFullscreen()
     {
-        Screen.fullScreen = fullscreenMode = !Screen.fullScreen;
+        fullscreenMode = !fullscreenMode;
+        hasChange = true;
     }
 
     public void ToggleShowCountryName()
@@ -214,7 +250,6 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.LoadScene(1);
         HideAllButtons();
         gameSettings.SetProperties(numberOfRounds, planes[selectedPlane], difficulty, showCountryName);
-        //Destroy(gameObject);
     }
     
     public void ShowDifficultyPanel()
@@ -257,13 +292,24 @@ public class MainMenuManager : MonoBehaviour
     public void SelectResolution()
     {
         int index = resolutionsDropdown.value;
-        selectedResolution = availableResolutions[index];
-        Screen.SetResolution(selectedResolution.width, selectedResolution.height, fullscreenMode);
+        selectedResolution = index;
+        hasChange = true;
+    }
+
+    private void SelectResolution(int index)
+    {
+        selectedResolution = index;
+        resolutionsDropdown.value = index;
+        Screen.SetResolution(availableResolutions[index].width, availableResolutions[index].height, fullscreenMode);
     }
 
     public void Apply()
     {
-        OptionsData.ApplySettings(soundSlider.value, musicSlider.value, fullscreenMode, selectedResolution);
+        OptionsData.SaveSettings(soundSlider.value, musicSlider.value, fullscreenMode, selectedResolution);
+        
+        Screen.SetResolution(availableResolutions[selectedResolution].width, availableResolutions[selectedResolution].height, fullscreenMode);
+        Screen.fullScreen = fullscreenMode;
+        hasChange = false;
     }
 
     public void SelectDifficulty(Image difficultyImage)
@@ -278,6 +324,12 @@ public class MainMenuManager : MonoBehaviour
         selectedDifficulty = difficultyImage;
         selectedDifficulty.color = selectedDifficulty.GetComponentInChildren<TextMeshProUGUI>().color = new Color(0.4716981f, 0.4716981f, 0.4716981f);
         selectedDifficulty.GetComponent<Button>().enabled = false;
+    }
+    
+    public void About()
+    {
+        buttonsPanel.SetActive(false);
+        aboutPanel.SetActive(true);
     }
 }
 

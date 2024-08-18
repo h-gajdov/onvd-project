@@ -9,8 +9,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Transform cityButtons;
     [SerializeField] private Transform feedbackParent;
     [SerializeField] private GameObject feedbackScorePefab;
+    [SerializeField] private GameObject pausePanel;
     [SerializeField] private TextMeshProUGUI roundsText;
     [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TMP_Dropdown resolutionsDropdown;
     [SerializeField] private float speed = 1f;
     
     private static RectTransform seeCity;
@@ -22,12 +24,40 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
+        pausePanel.SetActive(false);
         seeCity = cityButtons.GetChild(0).GetComponent<RectTransform>();
         nextCity = cityButtons.GetChild(1).GetComponent<RectTransform>();
         statSpeed = speed;
         instance = this;
         
+        FillResolutionsList();
         StartCoroutine(HideCityButtons());
+    }
+
+    private void FillResolutionsList()
+    {
+        resolutionsDropdown.ClearOptions();
+        foreach (Resolution res in MainMenuManager.availableResolutions)
+        {
+            string text = res.width + "x" + res.height;
+            TMP_Dropdown.OptionData data = new TMP_Dropdown.OptionData(text);
+            resolutionsDropdown.options.Add(data);
+        }
+
+        string label = MainMenuManager.availableResolutions[0].width + "x" + MainMenuManager.availableResolutions[0].height;
+        resolutionsDropdown.captionText.text = label;
+    }
+    
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape)) Pause();
+    }
+    
+    private void Pause()
+    {
+        // Player.instance
+        pausePanel.SetActive(!pausePanel.activeInHierarchy);
+        Time.timeScale = (pausePanel.activeInHierarchy) ? 0 : 1;
     }
     
     public static IEnumerator HideCityButtons()

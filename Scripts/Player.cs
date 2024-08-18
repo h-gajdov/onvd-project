@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
     public static Player instance;
     private static bool move = true;
 
-    private AudioSource source;
+    [HideInInspector] public AudioSource source;
     private float startSoundVolume;
     
     public float GravityMultiplier
@@ -61,7 +61,12 @@ public class Player : MonoBehaviour
 
         source = GetComponent<AudioSource>();
         startSoundVolume = source.volume;
-        source.volume = startSoundVolume * OptionsData.sfxVolume;
+        SetSFXVolume(OptionsData.sfxVolume);
+    }
+
+    public void SetSFXVolume(float value)
+    {
+        source.volume = startSoundVolume * value;
     }
     
     private void Update()
