@@ -55,6 +55,26 @@ public class CityJSONReader
         
         return cities.ToArray();
     }
+
+    public static City[] ReadTutorialCities()
+    {
+        List<City> cities = new List<City>();
+        List<string> names = new List<string>
+            { "Skopje", "Paris", "Berlin", "Moscow", "Athens", "Warsaw", "Seoul"};
+
+        for (int i = 0; i < names.Count; i++)
+        {
+            for (int j = 0; j < root.Count; j++)
+            {
+                City city = ReadCity(j);
+                if (names[i] != city.name || isPopulatedPlace(j)) continue;
+            
+                cities.Add(city);
+            }
+        }
+
+        return cities.ToArray();
+    }
     
     public static City ReadCity(int index)
     {
@@ -65,6 +85,19 @@ public class CityJSONReader
         return new City(name, point, countryName);
     }
 
+    public static City ReadCityByName(string name)
+    {
+        for (int i = 0; i < root.Count; i++)
+        {
+            City city = ReadCity(i);
+            if (name != city.name) continue;
+
+            return city;
+        }
+
+        return null;
+    }
+    
     public static bool isCapital(int index)
     {
         return root[index]["properties"]["featurecla"].Value.Contains("Admin-0 capital");

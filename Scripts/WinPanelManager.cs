@@ -28,11 +28,14 @@ public class WinPanelManager : MonoBehaviour
     private void Start()
     {
         instance = this;
+        Player.canDropPackage = false;
+        GameManager.instance.StopAllCoroutines();
+        GameManager.instance.StartCoroutine(UIManager.HideCityButtons());
+        GameManager.canTakeCity = false;
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.T)) SetProperties(797.7f, debugVar);
         MainMenuManager.EnableOrDisableButton(submitToLeaderboardButton, !entryGiven);
     }
 
@@ -64,7 +67,8 @@ public class WinPanelManager : MonoBehaviour
         int numberOfStarsLit;
         if (score >= 80f) numberOfStarsLit = 3;
         else if (score >= 30f) numberOfStarsLit = 2;
-        else numberOfStarsLit = 1;
+        else if (score != 0f) numberOfStarsLit = 1;
+        else numberOfStarsLit = 0;
 
         for (int i = 0; i < numberOfStarsLit; i++) instance.stars[i].sprite = instance.litStar;
         for (int i = numberOfStarsLit; i < 3; i++) instance.stars[i].sprite = instance.unlitStar;

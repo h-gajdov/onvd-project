@@ -10,11 +10,12 @@ public class Package : MonoBehaviour
     private AudioSource source;
     
     private Vector3 stopPoint;
-    private bool landed = false;
+    public bool landed = false;
     private float stopDistance;
     
     private void Start()
     {
+        Player.canDropPackage = false;
         source = GetComponent<AudioSource>();
         source.volume = OptionsData.sfxVolume;
         
@@ -41,7 +42,8 @@ public class Package : MonoBehaviour
         float distance =
             GameMath.DistanceBetweenCoordinatesOnEarth(packageCoordinate, GameManager.selectedCity.coordinate);
         GameManager.AddScore(GameMath.CalculateScoreFromDistance(distance));
-        StartCoroutine(UIManager.ShowCityButtons());
+        GameManager.instance.StopAllCoroutines();
+        GameManager.instance.StartCoroutine(UIManager.ShowCityButtons());
         GameManager.ShowCity();
         CameraControler.canTakeInput = true;
         GameManager.canTakeCity = true;

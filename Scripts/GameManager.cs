@@ -31,9 +31,10 @@ public class GameManager : MonoBehaviour
     private static float totalScore;
 
     public static bool canTakeCity = false;
-    private static int cityIndex = 0;
+    public static int cityIndex = 0;
 
     [SerializeField] private GameSettings gameSettings;
+    public bool isTutorial = true;
     
     private void Start()
     {
@@ -63,6 +64,7 @@ public class GameManager : MonoBehaviour
     {
         canTakeCity = false;
         CameraControler.canTakeInput = false;
+        instance.StopAllCoroutines();
         instance.StartCoroutine(UIManager.HideCityButtons());
         
         selectedCity = cities[cityIndex++];
@@ -127,16 +129,21 @@ public class GameManager : MonoBehaviour
                 break;
         }
         CityJSONReader.ShuffleCities(cities);
+        if (instance.isTutorial) cities = CityJSONReader.ReadTutorialCities();
         
         SetRandomCity();
+
         lastTarget = Vector3.zero;
-        
         if(MainMenuManager.instance != null) Destroy(MainMenuManager.instance.gameObject);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N) && canTakeCity) SetRandomCity();
+        if (Input.GetKeyDown(KeyCode.N) && canTakeCity)
+        {
+            SetRandomCity();
+            Player.canDropPackage = true;
+        }
     }
 
     public static void AddScore(float score)
@@ -146,7 +153,7 @@ public class GameManager : MonoBehaviour
         UIManager.SetRoundsUI(playedRounds, numberOfRounds);
         UIManager.SetScoreUI(totalScore);
         UIManager.ShowFeedbackScore(score);
-        if (playedRounds == numberOfRounds) instance.StartCoroutine(EndGame());
+        if (playedRounds == numberOfRounds) UIManager.instance.StartCoroutine(EndGame());
     }
 
     private static IEnumerator EndGame()

@@ -7822,7 +7822,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 395774611}
         m_TargetAssemblyTypeName: PauseInGameManager, Assembly-CSharp
         m_MethodName: ReturnToMenu
         m_Mode: 1
@@ -12637,6 +12637,7 @@ MonoBehaviour:
   cityText: {fileID: 1613938982}
   winPanel: {fileID: 457641712}
   gameSettings: {fileID: 11400000, guid: 5d94e17ad2eed3248b76b5c2d8587cc9, type: 2}
+  isTutorial: 1
 --- !u!4 &2062449293
 Transform:
   m_ObjectHideFlags: 0

@@ -331,6 +331,12 @@ public class MainMenuManager : MonoBehaviour
         buttonsPanel.SetActive(false);
         aboutPanel.SetActive(true);
     }
+
+    public void Tutorial()
+    {
+        SceneManager.LoadScene(2);
+        HideAllButtons();
+    }
 }
 
 public class ErrorMesages

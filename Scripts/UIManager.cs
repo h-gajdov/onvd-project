@@ -20,7 +20,7 @@ public class UIManager : MonoBehaviour
     private static float statSpeed;
     private static bool hidden = true;
 
-    private static UIManager instance;
+    public static UIManager instance;
 
     private void Start()
     {

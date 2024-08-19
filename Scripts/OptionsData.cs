@@ -55,7 +55,6 @@ public class OptionsData : MonoBehaviour
         
         sfxVolume = PlayerPrefs.GetFloat("sfxVolume");
         musicVolume = PlayerPrefs.GetFloat("musicVolume");
-        Debug.Log(musicVolume);
         fullscreen = PlayerPrefs.GetInt("fullscreen") != 0;
         resolutionIndex = PlayerPrefs.GetInt("selectedResolutionIndex");
     }

@@ -30,7 +30,8 @@ public class Player : MonoBehaviour
 
     public static Player instance;
     private static bool move = true;
-
+    public static bool canDropPackage = true;
+    
     [HideInInspector] public AudioSource source;
     private float startSoundVolume;
     
@@ -72,7 +73,8 @@ public class Player : MonoBehaviour
     private void Update()
     {
         Move();
-
+        
+        if (!canDropPackage) return;
         if(Input.GetKeyDown(KeyCode.Space)) DropPackage();
     }
 

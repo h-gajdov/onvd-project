@@ -139,6 +139,12 @@ public class GameMath
 
         CameraControler.coroutineActive = false;
     }
+
+    public static bool PositionIsInView(Vector3 position)
+    {
+        Vector3 viewport = Camera.main.WorldToViewportPoint(position);
+        return viewport.x >= 0 && viewport.x <= 1 && viewport.y >= 0 && viewport.y <= 1;
+    }
     
     public static List<RaycastResult> GetEventSystemRaycastResults()
     {

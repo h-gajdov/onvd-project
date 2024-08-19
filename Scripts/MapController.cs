@@ -15,6 +15,7 @@ public class MapController : MonoBehaviour
     private void Start()
     {
         instance = this;
+        if(GameManager.instance.isTutorial) SetPlaneFromChild();
     }
 
     private void Update()
@@ -39,5 +40,10 @@ public class MapController : MonoBehaviour
 
         TrailRenderer[] trails = p.GetComponentsInChildren<TrailRenderer>();
         foreach(var trail in trails) Destroy(trail.gameObject);
+    }
+
+    public static void SetPlaneFromChild()
+    {
+        instance.plane = instance.transform.GetChild(0).GetChild(0);
     }
 }
