@@ -64,13 +64,13 @@ public class EarthGenerator : MonoBehaviour
        
        faces = new TerrainFace[countries.Length];
        
-       for (int i = 0; i < countries.Length; i++)
-       {
-          foreach (CountryPolygon polygon in countries[i].polygons)
-          {
-             polygon.DrawLineRenderer(transform);
-          }
-       }
+       // for (int i = 0; i < countries.Length; i++)
+       // {
+       //    foreach (CountryPolygon polygon in countries[i].polygons)
+       //    {
+       //       polygon.DrawLineRenderer(transform);
+       //    }
+       // }
     }
     
     private void GenerateMesh()

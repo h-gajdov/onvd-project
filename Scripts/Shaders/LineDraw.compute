@@ -1,0 +1,45 @@
+#pragma kernel CSMain
+RWTexture2D<float4> surface;
+StructuredBuffer<float2> positions;
+StructuredBuffer<int> offsets;
+
+int numOfPositions;
+int numOfOffsets;
+float thickness;
+
+float2 coordinateToUv(float2 coord)
+{
+    float u = (coord[0] + 180.0) / 360.0;
+    float v = (coord[1] + 90.0) / 180.0;
+    return float2(u, v);
+}
+
+float Line( float2 p, float2 a, float2 b )
+{
+    float2 pa = p-a, ba = b-a;
+    float h = saturate( dot(pa,ba)/dot(ba,ba) );
+    float2 d = pa - ba * h;
+    return dot(d,d);
+}
+
+[numthreads(8,8,1)]
+void CSMain (uint2 id : SV_DispatchThreadID)
+{
+    float2 uv = float2 ((float)id.x/16384, (float)id.y/8192);
+    float sum = 0;
+    int drawIndex = 0;
+    for(int i = 0; i < numOfOffsets; i++)
+    {
+        for(int j = 0; j < offsets[i] - 1; j++)
+        {
+            float2 p1 = coordinateToUv(positions[drawIndex]);
+            float2 p2 = coordinateToUv(positions[drawIndex + 1]);
+            float k = Line(uv, p1, p2);
+            sum += lerp( float4(1,1,1,1), float4(0,0,0,1), smoothstep(0.0, thickness / 100000, k) );
+            drawIndex++;
+        }
+        drawIndex++;
+    }
+
+    surface[id.xy] = sum;
+}

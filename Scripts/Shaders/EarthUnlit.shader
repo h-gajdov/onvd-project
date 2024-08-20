@@ -7,6 +7,8 @@ Shader "Unlit/EarthUnlit"
         _ColorMapEast ("ColorMapEast", 2D) = "white" {}
         _NormalMapWest ("NormalMapWest", 2D) = "white" {}
         _NormalMapEast ("NormalMapEast", 2D) = "white" {}
+        _BordersMap ("BordersMap", 2D) = "white" {}
+        _BordersThickness("BordersThickness", Range(0,1)) = 0.5
         [Toggle] _UseNormal("Use Normal Map", Float) = 0
         _LightIntensity("LightIntensity", Float) = 2.0
         _SpecularIntensity("SpecularIntensity", Float) = 1.0
@@ -70,6 +72,7 @@ Shader "Unlit/EarthUnlit"
             sampler2D _NormalMap2;
             sampler2D _FoamMap;
             sampler2D _NoiseMap;
+            sampler2D _BordersMap;
             
             float _LightIntensity;
             float _UseNormal;
@@ -82,6 +85,7 @@ Shader "Unlit/EarthUnlit"
             float _FoamScale;
             float _NoiseScale;
             float _NoiseSpeed;
+            float _BordersThickness;
             
             float2 pointOnSphereToUV(float3 p)
             {
@@ -199,6 +203,9 @@ Shader "Unlit/EarthUnlit"
                 float3 normal = (_UseNormal == 1) ? getNormalFromUV(uv) : i.worldNormal;
                 float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
                 float3 light = max(0, dot(normal, lightDir)) * _LightIntensity;
+
+                float4 borderColor = tex2D(_BordersMap, uv);
+                if(borderColor.x >= 1 - _BordersThickness) return float4(0,0,0,1);
                 
                 if(height01.r == 0) {
                     float3 oceanLight = max(0, dot(i.worldNormal, lightDir)) * _LightIntensity / 4;

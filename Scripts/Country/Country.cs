@@ -33,6 +33,27 @@ public class CountryJSONReader
         return countries.ToArray();
     }
 
+    public static Country ReadCountry(int index)
+    {
+        CountryPolygon[] polygons = ReadGeometry(index);
+        CountryInfo info = ReadInfo(index);
+
+        return new Country(index, info, polygons);
+    }
+
+    public static Country ReadCountry(string name)
+    {
+        for (int i = 0; i < root.Count; i++)
+        {
+            CountryInfo info = ReadInfo(i);
+            if (info.name != name) continue;
+
+            return ReadCountry(i);
+        }
+
+        return null;
+    }
+    
     public static CountryInfo ReadInfo(int index)
     {
         var unserializedArray = root[index]["properties"];
@@ -63,10 +84,6 @@ public class CountryJSONReader
         else
         {
             result = new CountryPolygon[unserializedArray.Count];
-            // for (int i = 0; i < unserializedArray.Count; i++)
-            // {
-            //     count += unserializedArray[i][0].Count;
-            // }
 
             for (int i = 0; i < unserializedArray.Count; i++)
             {

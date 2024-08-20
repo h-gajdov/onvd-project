@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a08f44faff02350448e89fa640c333d5, type: 3}
   m_Name: StartSettings
   m_EditorClassIdentifier: 
-  rounds: 0
-  plane: {fileID: 0}
+  rounds: 7
+  plane: {fileID: 3852990792173048575, guid: d545e19d55c7f2f47b647c26e9e75646, type: 3}
   diff: 0
-  showCountryName: 0
+  showCountryName: 1
