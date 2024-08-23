@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextAsset cityJson;
     [SerializeField] private TextMeshProUGUI cityText;
     [SerializeField] private GameObject winPanel;
+    public GameObject compass;
     private TextMeshProUGUI countryText;
 
     public static City[] cities;
@@ -40,11 +41,13 @@ public class GameManager : MonoBehaviour
     {
         if(instance == null) instance = this;
         
+        if(!isTutorial) Player.canDropPackage = true;
         planet = GameObject.FindGameObjectWithTag("Planet").transform;
         cityMarker = Resources.Load("Prefabs/CityMarker/CityMarker") as GameObject;
         countryText = cityText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         playedRounds = 0;
         totalScore = 0;
+        cityIndex = 0;
         canTakeCity = false;
 
         StartCoroutine(InitializeGame(gameSettings));
@@ -93,6 +96,7 @@ public class GameManager : MonoBehaviour
         GameObject plane = settings.plane;
         int diff = settings.diff;
         bool showCountryName = settings.showCountryName;
+        bool showCompass = settings.showCompass;
         
         numberOfRounds = rounds;
         yield return null;
@@ -103,6 +107,7 @@ public class GameManager : MonoBehaviour
         Player.instance.planeTransform = p.transform;
         p.transform.SetSiblingIndex(0);
         instance.countryText.gameObject.SetActive(showCountryName);
+        instance.compass.SetActive(showCompass);
 
         MapController.InstantiatePlane(plane);
         UIManager.SetRoundsUI(playedRounds, numberOfRounds);

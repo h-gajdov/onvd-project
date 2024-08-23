@@ -23,6 +23,7 @@ public class StarSpawner : MonoBehaviour
         Random.InitState(seed);
         
         SpawnStaticStars();
+        SpawnComet();
         
         Random.InitState(System.Environment.TickCount);
     }
@@ -36,6 +37,8 @@ public class StarSpawner : MonoBehaviour
             Color color = starGradient.Evaluate(gradientValue);
             GameObject star = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             star.name = "Star";
+            Destroy(star.GetComponent<Collider>());
+            star.layer = LayerMask.NameToLayer("Post Processing");
             Vector3 spawnPosition = GameMath.GetRandomScreenToWorldPosition(spawnDistance);
             star.transform.parent = transform;
             star.transform.position = spawnPosition;

@@ -26,24 +26,15 @@ public class PauseInGameManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown resolutionsDropdown;
     private int selectedResolution;
     private bool fullscreenMode;
-    private bool canResume = false;
     private bool hasChange = false;
     
     private void Start()
     {
         LoadSettingsData();
     }
-
-    private IEnumerator WaitForInit()
-    {
-        yield return null;
-        canResume = true;
-    }
     
     private void Update()
     {
-        // if(Input.GetKeyDown(KeyCode.Escape) && canResume) Resume();
-        
         MainMenuManager.EnableOrDisableButton(applyButton, hasChange);
         MainMenuManager.EnableOrDisableButton(setToDefaultButton, OptionsData.CanChangeToDefault());
     }
@@ -52,7 +43,6 @@ public class PauseInGameManager : MonoBehaviour
     {
         pausePanel.SetActive(false);
         Time.timeScale = 1;
-        canResume = false;
     }
 
     public void Options()
@@ -76,7 +66,7 @@ public class PauseInGameManager : MonoBehaviour
         OptionsData.LoadSettings();
         
         soundSlider.value = OptionsData.sfxVolume;
-        musicSlider.value = OptionsData.musicVolume;
+        OnMusicChange(OptionsData.musicVolume);
         Screen.fullScreen = OptionsData.fullscreen;
         fullScreenToggle.isOn = OptionsData.fullscreen;
         fullscreenMode = OptionsData.fullscreen;
@@ -86,16 +76,24 @@ public class PauseInGameManager : MonoBehaviour
     public void OnMusicChange()
     {
         musicImage.sprite = (musicSlider.value == 0) ? crossedMusic : uncrossedMusic;
-        OptionsData.UpdateSound(soundSlider.value, musicSlider.value);
+        OptionsData.UpdateSound(OptionsData.sfxVolume, musicSlider.value);
         hasChange = true;
     }
 
+    private void OnMusicChange(float value)
+    {
+        musicSlider.value = value;
+        musicImage.sprite = (value == 0) ? crossedMusic : uncrossedMusic;
+        OptionsData.UpdateSound(OptionsData.sfxVolume, value);
+        hasChange = true;
+    }
+    
     public void OnSoundChange()
     {
         AudioManager.UpdateSFXVolume(soundSlider.value);
         Player.instance.SetSFXVolume(soundSlider.value);
         soundImage.sprite = (soundSlider.value == 0) ? crossedSound : uncrossedSound;
-        OptionsData.UpdateSound(soundSlider.value, musicSlider.value);
+        OptionsData.UpdateSound(soundSlider.value, OptionsData.musicVolume);
         hasChange = true;
     }
 

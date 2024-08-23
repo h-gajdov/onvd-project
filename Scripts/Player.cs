@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float packageLifetime = 100;
     
     [HideInInspector] public Transform planeTransform;
+    [SerializeField] private bool isExploring = false;
 
     public static Player instance;
     private static bool move = true;
@@ -74,7 +75,7 @@ public class Player : MonoBehaviour
     {
         Move();
         
-        if (!canDropPackage) return;
+        if (!canDropPackage || isExploring) return;
         if(Input.GetKeyDown(KeyCode.Space)) DropPackage();
     }
 

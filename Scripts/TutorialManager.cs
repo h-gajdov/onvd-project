@@ -9,7 +9,7 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Transform skopje;
     [SerializeField] private GameObject[] highlights;
     
-    public int step = 0;
+    private int step = 0;
 
     private bool pressedA = false, pressedD = false;
     private bool pressedSpace;
@@ -20,11 +20,13 @@ public class TutorialManager : MonoBehaviour
     private void Start()
     {
         EnableStep(step);
+        DisableAllHighlights();
         Player.canDropPackage = false;
     }
 
     private void Update()
     {
+        if (step > 10) Player.canDropPackage = false;
         if(CanAdvance()) Next();
     }
 
@@ -57,10 +59,11 @@ public class TutorialManager : MonoBehaviour
 
         if (step >= 9) Player.canDropPackage = true;
 
-        if (step >= 4 && step <= 6)
+        if (step >= 4 && step <= 7)
         {
             EnableHighlight(step - 4);
-            Player.SetMovement(false);
+            GameManager.instance.compass.SetActive(step == 7);
+            Player.SetMovement(step == 7);
         }
         else
         {

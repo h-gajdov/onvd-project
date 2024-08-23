@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OptionsData : MonoBehaviour
+public class OptionsData
 {
     public static float sfxVolume;
     public static float musicVolume;

@@ -16,3 +16,4 @@ MonoBehaviour:
   plane: {fileID: 3852990792173048575, guid: d545e19d55c7f2f47b647c26e9e75646, type: 3}
   diff: 0
   showCountryName: 1
+  showCompass: 1

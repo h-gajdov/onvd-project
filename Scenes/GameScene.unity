@@ -9,7 +9,7 @@ OcclusionCullingSettings:
     smallestHole: 0.25
     backfaceThreshold: 100
   m_SceneGUID: 9fc0d4010bbf28b4594072e72b8655ab
-  m_OcclusionCullingData: {fileID: 36300000, guid: 70c7efac2b930c449a0a5235d810dc65, type: 2}
+  m_OcclusionCullingData: {fileID: 36300000, guid: ae8bcfc3f9f81b04b8109ed02480af71, type: 2}
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
@@ -13526,8 +13526,9 @@ MonoBehaviour:
   cityJson: {fileID: 4900000, guid: 202dc99c287e78447bc6061ecb312d88, type: 3}
   cityText: {fileID: 1613938982}
   winPanel: {fileID: 457641712}
+  compass: {fileID: 1238056930}
   gameSettings: {fileID: 11400000, guid: 5d94e17ad2eed3248b76b5c2d8587cc9, type: 2}
-  isTutorial: 1
+  isTutorial: 0
 --- !u!4 &2062449293
 Transform:
   m_ObjectHideFlags: 0
@@ -13824,12 +13825,13 @@ MonoBehaviour:
   speedSmoothTime: 10
   turnSmoothTime: 100
   tiltSmoothTime: 10
-  minElevation: 610
+  minElevation: 620
   maxElevation: 700
   packagePrefab: {fileID: 5614573783890334765, guid: aacba81282697234c99af16994369d54, type: 3}
   gravityMultiplier: -2.4525
   packageLifetime: 120
   planeTransform: {fileID: 0}
+  isExploring: 0
   source: {fileID: 0}
 --- !u!143 &919132148674151426
 CharacterController:

@@ -38,8 +38,9 @@ public class MainMenuManager : MonoBehaviour
 
     [Space] [Header("DifficultyPanel")] 
     [SerializeField] private Image playButtonDifficulty;
+    [SerializeField] private Toggle showCompassToggle;
+    [SerializeField] private Toggle showCountryNameToggle;
     private int difficulty = -1;
-    private bool showCountryName = true;
     private Image selectedDifficulty;
 
     [Space] [Header("Options Panel")] 
@@ -169,7 +170,7 @@ public class MainMenuManager : MonoBehaviour
         OptionsData.LoadSettings();
         
         soundSlider.value = OptionsData.sfxVolume;
-        musicSlider.value = OptionsData.musicVolume;
+        OnMusicChange(OptionsData.musicVolume);
         Screen.fullScreen = OptionsData.fullscreen;
         fullScreenToggle.isOn = OptionsData.fullscreen;
         fullscreenMode = OptionsData.fullscreen;
@@ -222,15 +223,24 @@ public class MainMenuManager : MonoBehaviour
     {
         musicSource.volume = musicSlider.value;
         musicImage.sprite = (musicSlider.value == 0) ? crossedMusic : uncrossedMusic;
-        OptionsData.UpdateSound(soundSlider.value, musicSlider.value);
+        OptionsData.UpdateSound(OptionsData.sfxVolume, musicSlider.value);
         hasChange = true;
     }
 
+    private void OnMusicChange(float value)
+    {
+        musicSource.volume = value;
+        musicSlider.value = value;
+        musicImage.sprite = (value == 0) ? crossedMusic : uncrossedMusic;
+        OptionsData.UpdateSound(OptionsData.sfxVolume, value);
+        hasChange = true;
+    }
+    
     public void OnSoundChange()
     {
         AudioManager.UpdateSFXVolume(soundSlider.value);
         soundImage.sprite = (soundSlider.value == 0) ? crossedSound : uncrossedSound;
-        OptionsData.UpdateSound(soundSlider.value, musicSlider.value);
+        OptionsData.UpdateSound(soundSlider.value, OptionsData.musicVolume);
         hasChange = true;
     }
 
@@ -240,16 +250,11 @@ public class MainMenuManager : MonoBehaviour
         hasChange = true;
     }
 
-    public void ToggleShowCountryName()
-    {
-        showCountryName = !showCountryName;
-    }
-
     public void ChangeScene()
     {
         SceneManager.LoadScene(1);
         HideAllButtons();
-        gameSettings.SetProperties(numberOfRounds, planes[selectedPlane], difficulty, showCountryName);
+        gameSettings.SetProperties(numberOfRounds, planes[selectedPlane], difficulty, showCountryNameToggle.isOn, showCompassToggle.isOn);
     }
     
     public void ShowDifficultyPanel()
