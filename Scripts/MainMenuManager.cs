@@ -79,8 +79,6 @@ public class MainMenuManager : MonoBehaviour
         selectedDifficulty = null;
         instance = this;
         
-        FillResolutionsList();
-        
         LeaderboardUser.SetSprites(medals[0], medals[1], medals[2]);
         LeaderboardManager.GetLeaderboard(leaderboardUserPrefab, scrollViewport);
         OnHover.SetMouseFollower(explanationPanel);
@@ -88,13 +86,14 @@ public class MainMenuManager : MonoBehaviour
         
         DontDestroyOnLoad(gameObject);
         LoadSettingsData();
+        FillResolutionsList();
     }
 
     private void FillResolutionsList()
     {
         resolutionsDropdown.ClearOptions();
-        availableResolutions = Screen.resolutions;
-        // availableResolutions = Screen.resolutions.Where(resolution => resolution.refreshRate == 60).ToArray();
+        // availableResolutions = Screen.resolutions;
+        availableResolutions = Screen.resolutions.Where(resolution => resolution.refreshRate == 60).ToArray();
         Array.Reverse(availableResolutions);
         foreach (Resolution res in availableResolutions)
         {
@@ -252,7 +251,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void ChangeScene()
     {
-        SceneManager.LoadScene(1);
+        StartCoroutine(LoadingPanelManager.LoadLevelAsync(1));
         HideAllButtons();
         gameSettings.SetProperties(numberOfRounds, planes[selectedPlane], difficulty, showCountryNameToggle.isOn, showCompassToggle.isOn);
     }

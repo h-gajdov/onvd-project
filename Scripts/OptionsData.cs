@@ -9,6 +9,8 @@ public class OptionsData
     public static bool fullscreen;
     public static int resolutionIndex;
 
+    public static bool playedOpenAnimation = false;
+    
     public static void SetDefaultSettings()
     {
         SaveSettings(0.5f, 0.5f, true, 0);

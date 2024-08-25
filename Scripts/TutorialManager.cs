@@ -9,9 +9,10 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private Transform skopje;
     [SerializeField] private GameObject[] highlights;
     
-    private int step = 0;
+    public int step = 0;
 
     private bool pressedA = false, pressedD = false;
+    private bool pressedQ = false, pressedE = false;
     private bool pressedSpace;
     private bool changed = false;
 
@@ -26,7 +27,7 @@ public class TutorialManager : MonoBehaviour
 
     private void Update()
     {
-        if (step > 10) Player.canDropPackage = false;
+        if (step > 11) Player.canDropPackage = false;
         if(CanAdvance()) Next();
     }
 
@@ -40,13 +41,17 @@ public class TutorialManager : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.A)) pressedA = true;
                 if (Input.GetKeyDown(KeyCode.D)) pressedD = true;
                 return pressedA && pressedD;
-            case 7:
-                return GameMath.PositionIsInView(skopje.position);
+            case 2:
+                if (Input.GetKeyDown(KeyCode.Q)) pressedQ = true;
+                if (Input.GetKeyDown(KeyCode.E)) pressedE = true;
+                return pressedQ && pressedE;
             case 8:
-                return Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl);
+                return GameMath.PositionIsInView(skopje.position);
             case 9:
-                return GameManager.cityIndex != 1;
+                return Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl);
             case 10:
+                return GameManager.cityIndex != 1;
+            case 11:
                 return GameManager.cityIndex != 2;
         }
 
@@ -57,19 +62,21 @@ public class TutorialManager : MonoBehaviour
     {
         EnableStep(++step);
 
-        if (step >= 9) Player.canDropPackage = true;
-
-        if (step >= 4 && step <= 7)
+        if (step >= 10) Player.canDropPackage = true;
+        
+        if (step >= 5 && step <= 8)
         {
-            EnableHighlight(step - 4);
-            GameManager.instance.compass.SetActive(step == 7);
-            Player.SetMovement(step == 7);
+            EnableHighlight(step - 5);
+            GameManager.instance.compass.SetActive(step == 8);
+            Player.SetMovement(step == 8);
         }
         else
         {
             DisableAllHighlights();
             Player.SetMovement(true);
         }
+        
+        if(step == 4) Player.SetMovement(false);
     }
     
     private void DisableAllSteps()

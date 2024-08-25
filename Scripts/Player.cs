@@ -8,10 +8,10 @@ public class Player : MonoBehaviour
     [Header("Plane Settings")]
     [SerializeField] private float idleSpeed = 1f;
     [SerializeField] private float accelerationSpeed = 2f;
-    [SerializeField] private float heightChangeSpeed = 0.5f;
     [SerializeField] private float speedSmoothTime = 1f;
     [SerializeField] private float turnSmoothTime = 1f;
     [SerializeField] private float tiltSmoothTime = 1f;
+    [SerializeField] private float soundSmoothTime = 1f; 
     private float moveSpeed;
 
     [Space]
@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float minElevation = 620f;
     [SerializeField] private float maxElevation = 670f;
     private float startElevation = 645f;
+    private float height = 45f;
     
     [Space]
     [Header("Package Settings")]
@@ -78,14 +79,14 @@ public class Player : MonoBehaviour
         if (!canDropPackage || isExploring) return;
         if(Input.GetKeyDown(KeyCode.Space)) DropPackage();
     }
-
-    private float height = 45f;
+    
     private void Move()
     {
         if (!move) return;
         
         int changesHeight = 0;
         float speed = (Input.GetKey(KeyCode.W)) ? accelerationSpeed : idleSpeed;
+        float soundPitch = (speed == accelerationSpeed) ? 1f : 0.25f;
         float turnDirection = Input.GetAxisRaw("Horizontal");
         float turnAmount = turnDirection * turnSmoothTime * Time.deltaTime;
         float distanceFromPlanet = GameManager.GetDistanceFromPlanet(transform.position);
@@ -98,16 +99,17 @@ public class Player : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Q) && distanceFromPlanet > minElevation)
         {
-            height -= heightChangeSpeed * Time.deltaTime;
+            height -= speed * Time.deltaTime;
             changesHeight = 1;
         }
         else if (Input.GetKey(KeyCode.E) && distanceFromPlanet < maxElevation)
         {
-            height += heightChangeSpeed * Time.deltaTime;
+            height += speed * Time.deltaTime;
             changesHeight = -1;
         }
         
         UpdateRotation(turnAmount, turnDirection, changesHeight);
+        source.pitch = Mathf.Lerp(source.pitch, soundPitch, soundSmoothTime * Time.deltaTime);
     }
 
     private void UpdateRotation(float turnAmount, float direction, int changesHeight)

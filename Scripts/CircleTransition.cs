@@ -38,7 +38,14 @@ public class CircleTransition : MonoBehaviour
         SetAlphaOfUIElements(images, 0f);
         ToggleButtons(false);
 
+        if (OptionsData.playedOpenAnimation)
+        {
+            material.SetFloat("_Radius", 1f);
+            StartCoroutine(Alpha());
+            return;
+        }
         StartCoroutine(Circle());
+        OptionsData.playedOpenAnimation = true;
     }
 
     private void SetAlphaOfUIElements(TextMeshProUGUI[] array, float a)
