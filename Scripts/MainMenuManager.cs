@@ -83,10 +83,10 @@ public class MainMenuManager : MonoBehaviour
         LeaderboardManager.GetLeaderboard(leaderboardUserPrefab, scrollViewport);
         OnHover.SetMouseFollower(explanationPanel);
         AudioManager.UpdateSFXVolume(soundSlider.value);
-        
+
+        FillResolutionsList();
         DontDestroyOnLoad(gameObject);
         LoadSettingsData();
-        FillResolutionsList();
     }
 
     private void FillResolutionsList()
@@ -104,6 +104,7 @@ public class MainMenuManager : MonoBehaviour
 
         string label = availableResolutions[0].width + "x" + availableResolutions[0].height;
         resolutionsDropdown.captionText.text = label;
+        Debug.Log(availableResolutions[0].width + " " + availableResolutions[0].height);
     }
 
     private void HideAllButtons()
@@ -254,6 +255,12 @@ public class MainMenuManager : MonoBehaviour
         StartCoroutine(LoadingPanelManager.LoadLevelAsync(1));
         HideAllButtons();
         gameSettings.SetProperties(numberOfRounds, planes[selectedPlane], difficulty, showCountryNameToggle.isOn, showCompassToggle.isOn);
+    }
+
+    public void Explore()
+    {
+        StartCoroutine(LoadingPanelManager.LoadLevelAsync(3));
+        HideAllButtons();
     }
     
     public void ShowDifficultyPanel()

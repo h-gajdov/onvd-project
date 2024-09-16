@@ -8,10 +8,17 @@ using UnityEngine;
 public class CountryJSONReader
 {
     private static JSONNode root;
+    private static JSONNode desc;
     
     public static void SetJSONFile(TextAsset jsonFile)
     {
         root = JSON.Parse(jsonFile.text)["features"];
+    }
+
+    public static void SetDescriptionJSONFile(TextAsset jsonFile)
+    {
+        desc = JSON.Parse(jsonFile.text);
+        Debug.Log(desc.Count);
     }
     
     public static Country[] ReadAllCountries()
@@ -27,7 +34,7 @@ public class CountryJSONReader
             CountryPolygon[] polygons = ReadGeometry(i);
             CountryInfo info = ReadInfo(i);
             
-            countries.Add(new Country(cx++, info, polygons));
+            countries.Add(new Country(info, polygons));
         }
 
         return countries.ToArray();
@@ -38,7 +45,7 @@ public class CountryJSONReader
         CountryPolygon[] polygons = ReadGeometry(index);
         CountryInfo info = ReadInfo(index);
 
-        return new Country(index, info, polygons);
+        return new Country(info, polygons);
     }
 
     public static Country ReadCountry(string name)
@@ -58,7 +65,7 @@ public class CountryJSONReader
     {
         var unserializedArray = root[index]["properties"];
         string name = unserializedArray["ADMIN"];
-        return new CountryInfo(name);
+        return new CountryInfo(index, name);
     }
     
     public static CountryPolygon[] ReadGeometry(int index)
@@ -102,19 +109,22 @@ public class CountryJSONReader
 
         return result;
     }
+
+    public static string ReadDescription(int index)
+    {
+        return desc[index]["description"];
+    }
 }
 
 [Serializable]
 public class Country
 {
-    public int index;
     public CountryInfo info;
     // public Vector2[] geometry;
     public CountryPolygon[] polygons;
     
-    public Country(int index, CountryInfo info, CountryPolygon[] polygons)
+    public Country(CountryInfo info, CountryPolygon[] polygons)
     {
-        this.index = index;
         this.info = info;
         
         this.polygons = new CountryPolygon[polygons.Length];
@@ -127,11 +137,20 @@ public class Country
 [Serializable]
 public class CountryInfo
 {
+    public int index;
     public string name;
+    public string description;
+    public Sprite flag;
+    public City capitalCity;
     
-    public CountryInfo(string name)
+    public CountryInfo(int index, string name)
     {
+        this.index = index;
         this.name = name;
+        flag = Resources.Load<Sprite>("CountryFlags/" + this.name);
+        if (flag == null) flag = Resources.Load<Sprite>("CountryFlags/No Flag");
+        capitalCity = CityJSONReader.ReadCapital(index);
+        description = CountryJSONReader.ReadDescription(index);
     }
 
     public void Print()

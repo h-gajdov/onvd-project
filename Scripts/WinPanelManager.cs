@@ -48,6 +48,8 @@ public class WinPanelManager : MonoBehaviour
         string rankStr = rankResult.ToString();
         switch (rankResult)
         {
+            case -1: rankStr = "--";
+                break;
             case 1:
                 rankStr += "ST";
                 break;

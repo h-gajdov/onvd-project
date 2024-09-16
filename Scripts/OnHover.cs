@@ -33,4 +33,9 @@ public class OnHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         mouseFollower.SetActive(false);
     }
+
+    private void OnDisable()
+    {
+        mouseFollower.SetActive(false);
+    }
 }

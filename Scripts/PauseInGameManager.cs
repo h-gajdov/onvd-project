@@ -27,10 +27,13 @@ public class PauseInGameManager : MonoBehaviour
     private int selectedResolution;
     private bool fullscreenMode;
     private bool hasChange = false;
-    
+
+    public static PauseInGameManager instance;
+
     private void Start()
     {
         LoadSettingsData();
+        gameObject.SetActive(false);
     }
     
     private void Update()
@@ -43,6 +46,7 @@ public class PauseInGameManager : MonoBehaviour
     {
         pausePanel.SetActive(false);
         Time.timeScale = 1;
+        Player.instance.source.Play();
     }
 
     public void Options()

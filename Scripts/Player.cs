@@ -8,11 +8,9 @@ public class Player : MonoBehaviour
     [Header("Plane Settings")]
     [SerializeField] private float idleSpeed = 1f;
     [SerializeField] private float accelerationSpeed = 2f;
-    [SerializeField] private float speedSmoothTime = 1f;
     [SerializeField] private float turnSmoothTime = 1f;
     [SerializeField] private float tiltSmoothTime = 1f;
     [SerializeField] private float soundSmoothTime = 1f; 
-    private float moveSpeed;
 
     [Space]
     [Header("Elevation Settings")]
@@ -60,7 +58,6 @@ public class Player : MonoBehaviour
         Vector3 lookDirection = GameManager.GetPlanetDirection(transform.position);
         Quaternion lookRotation = Quaternion.LookRotation(lookDirection);
         transform.rotation = lookRotation;
-        moveSpeed = idleSpeed;
 
         source = GetComponent<AudioSource>();
         startSoundVolume = source.volume;
@@ -79,7 +76,8 @@ public class Player : MonoBehaviour
         if (!canDropPackage || isExploring) return;
         if(Input.GetKeyDown(KeyCode.Space)) DropPackage();
     }
-    
+
+    private float previousSpeed = -1;
     private void Move()
     {
         if (!move) return;
@@ -90,6 +88,12 @@ public class Player : MonoBehaviour
         float turnDirection = Input.GetAxisRaw("Horizontal");
         float turnAmount = turnDirection * turnSmoothTime * Time.deltaTime;
         float distanceFromPlanet = GameManager.GetDistanceFromPlanet(transform.position);
+
+        if (isExploring && Input.GetKey(KeyCode.Space))
+        {
+            speed = Mathf.Lerp((previousSpeed == -1) ? speed : previousSpeed, 0f, 5f * Time.deltaTime);
+        }
+        previousSpeed = speed;
         
         Vector3 newPos = transform.position + planeTransform.forward * speed * Time.deltaTime;
         Vector3 gravityUp = newPos.normalized;
@@ -112,7 +116,7 @@ public class Player : MonoBehaviour
         source.pitch = Mathf.Lerp(source.pitch, soundPitch, soundSmoothTime * Time.deltaTime);
     }
 
-    private void UpdateRotation(float turnAmount, float direction, int changesHeight)
+    public void UpdateRotation(float turnAmount, float direction, int changesHeight)
     {
         float tiltAngle = (direction != 0f) ? -direction * 45f : 0f;
         Quaternion tiltRotation = Quaternion.Euler(changesHeight * 45f, 0f, tiltAngle);

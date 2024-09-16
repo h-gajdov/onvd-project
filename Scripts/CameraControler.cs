@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class CameraControler : MonoBehaviour
 {
-    [SerializeField] private float speed = 5f;
-    
     private bool moving = false;
     private Vector3 idlePosition;
     
@@ -18,13 +16,13 @@ public class CameraControler : MonoBehaviour
         StopAllCoroutines();
         moving = true;
         Player.SetMovement(false);
-        StartCoroutine(GameMath.SlerpTransformToPosition(transform, GameManager.lastTarget, speed));
+        StartCoroutine(GameMath.SlerpTransformToPosition(transform, GameManager.lastTarget));
     }
 
     private void MoveCameraToPlayer()
     {
         StopAllCoroutines();
-        StartCoroutine(GameMath.SlerpTransformToPosition(transform, Player.instance.transform.position, speed));
+        StartCoroutine(GameMath.SlerpTransformToPosition(transform, Player.instance.transform.position));
         StartCoroutine(ResetPlayer());
     }
 

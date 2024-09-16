@@ -29,7 +29,8 @@ public class UIManager : MonoBehaviour
         nextCity = cityButtons.GetChild(1).GetComponent<RectTransform>();
         statSpeed = speed;
         instance = this;
-        
+
+        PauseInGameManager.instance.LoadSettingsData();
         FillResolutionsList();
         StartCoroutine(HideCityButtons());
     }
@@ -56,7 +57,10 @@ public class UIManager : MonoBehaviour
     private void Pause()
     {
         pausePanel.SetActive(!pausePanel.activeInHierarchy);
-        Time.timeScale = (pausePanel.activeInHierarchy) ? 0 : 1;
+        bool isPaused = pausePanel.activeInHierarchy;
+        Time.timeScale = (isPaused) ? 0 : 1;
+        if (!isPaused) Player.instance.source.Play();
+        else Player.instance.source.Pause();
     }
     
     public static IEnumerator HideCityButtons()

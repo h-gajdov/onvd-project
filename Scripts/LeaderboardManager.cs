@@ -84,9 +84,10 @@ public class LeaderboardUser
 
 public class LeaderboardManager : MonoBehaviour
 {
-    private static string publicKey = "891189cd306fc2c810a6d2bbb56d7d6ea00ea764c9bf9f7c341c42520fad503b";
+    private static string publicKey = "682feb9e45b00d9b3b0c98af19f759634433c5fc786dcb8cac13c1468b417192";
     public static List<LeaderboardUser> users = new List<LeaderboardUser>();
-    
+    public static bool hasLeaderboard = false;
+
     public static void GetLeaderboard(GameObject leaderboardUserPrefab, Transform scrollViewPort)
     {
         LeaderboardCreator.GetLeaderboard(publicKey, ((msg) =>
@@ -118,9 +119,11 @@ public class LeaderboardManager : MonoBehaviour
                 
                 GameObject userPrefab = Instantiate(leaderboardUserPrefab);
                 userPrefab.transform.parent = scrollViewPort;
-                uiUser.SetInfo(userPrefab);    
+                uiUser.SetInfo(userPrefab);
+                hasLeaderboard = true;
             }
-        }));
+            Debug.Log(hasLeaderboard);
+        }), (errCallback) => { hasLeaderboard = false; });
     }
 
     public static void SetLeaderboardEntry(string username, float score)
@@ -134,28 +137,29 @@ public class LeaderboardManager : MonoBehaviour
 
     public static int GetRankOfScore(float score)
     {
-        int min = 0;
-        int max = users.Count - 1;
-        int mid = 0;
-        bool isSmaller = false;
-        while (min <= max)
+        if (!hasLeaderboard) return -1;
+
+        int left = 0;
+        int right = users.Count - 1;
+
+        while (left <= right)
         {
-            mid = (min + max) / 2;
-            if (score == users[mid].Score)
+            int mid = (left + right) / 2;
+
+            if (users[mid].Score == score)
             {
-                break;
+                return mid + 1;
             }
-            else if (score < users[mid].Score)
+            else if (score > users[mid].Score)
             {
-                min = mid + 1;
-                isSmaller = true;
+                right = mid - 1;
             }
             else
             {
-                max = mid - 1;
-                isSmaller = false;
+                left = mid + 1;
             }
         }
-        return (isSmaller) ? mid + 2 : mid + 1;
+        Debug.Log(users.Count);
+        return (left + 1 >= users.Count && users.Count > 0) ? users.Count : left + 1;
     }
 }

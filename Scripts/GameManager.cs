@@ -86,7 +86,17 @@ public class GameManager : MonoBehaviour
         GameObject citySphere = Instantiate(cityMarker);
         TextMeshProUGUI cityText = citySphere.transform.GetComponentInChildren<TextMeshProUGUI>();
         citySphere.transform.position = selectedCity.worldPosition;
+        citySphere.transform.rotation = Quaternion.LookRotation(citySphere.transform.position.normalized, Vector3.zero);
         cityText.text = selectedCity.name;
+        Destroy(citySphere, 120f);
+    }
+
+    public static void ShowCity(City city)
+    {
+        GameObject citySphere = Instantiate(cityMarker);
+        TextMeshProUGUI cityText = citySphere.transform.GetComponentInChildren<TextMeshProUGUI>();
+        citySphere.transform.position = city.worldPosition;
+        cityText.text = city.name;
         Destroy(citySphere, 120f);
     }
     

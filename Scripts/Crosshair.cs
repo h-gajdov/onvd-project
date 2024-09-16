@@ -95,6 +95,7 @@ public class Crosshair : MonoBehaviour
             yield return null;
         }
 
+        mesh.Clear();
         endedCoroutine = true;
     }
 }

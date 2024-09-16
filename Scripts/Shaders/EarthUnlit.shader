@@ -29,7 +29,7 @@ Shader "Unlit/EarthUnlit"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Opaque" "LightMode" = "ForwardBase" }
         LOD 100
 
         Pass
@@ -37,11 +37,8 @@ Shader "Unlit/EarthUnlit"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
 
             #include "UnityCG.cginc"
-            			#include "UnityLightingCommon.cginc"
 			#include "AutoLight.cginc"
 
             struct appdata
@@ -112,7 +109,7 @@ Shader "Unlit/EarthUnlit"
 
             float4 getHeightFromUV(float2 uv)
             {
-                if(uv.x <= 0.5) return tex2D(_ColorMapWest, uv * float2(2,1));
+                if(uv.x <= 0.5) return tex2D(_ColorMapWest, uv * float2(2, 1));
                 
                 return tex2D(_ColorMapEast, float2(2 * uv.x - 1, uv.y));
             }
@@ -150,7 +147,7 @@ Shader "Unlit/EarthUnlit"
                 float2 uvX = i.worldPos.zy;
                 float2 uvY = i.worldPos.xz;
                 float2 uvZ = i.worldPos.xy;
-                float3 blendWeight = pow(abs(i.worldNormal), 1);
+                float3 blendWeight = abs(i.worldNormal);
                 blendWeight /= dot(blendWeight, 1);
                 float3 viewDir = normalize(i.worldPos - _WorldSpaceCameraPos.xyz);
                 

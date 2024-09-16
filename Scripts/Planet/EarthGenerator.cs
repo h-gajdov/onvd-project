@@ -57,22 +57,6 @@ public class EarthGenerator : MonoBehaviour
         }
     }
     
-    private void FillCountries()
-    {
-       CountryJSONReader.SetJSONFile(countryJson);
-       Country[] countries = CountryJSONReader.ReadAllCountries();
-       
-       faces = new TerrainFace[countries.Length];
-       
-       // for (int i = 0; i < countries.Length; i++)
-       // {
-       //    foreach (CountryPolygon polygon in countries[i].polygons)
-       //    {
-       //       polygon.DrawLineRenderer(transform);
-       //    }
-       // }
-    }
-    
     private void GenerateMesh()
     {
         if (faces == null || !generate) return;
@@ -85,10 +69,9 @@ public class EarthGenerator : MonoBehaviour
        FillFaces();
        GenerateMesh();
     }
-
+    
     private void Start()
     {
-       instance = this;
-       FillCountries();
+        instance = this;
     }
 }

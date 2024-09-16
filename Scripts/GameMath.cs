@@ -117,10 +117,10 @@ public class GameMath
     private static float Speed(float x, float speed)
     {
         float epsilon = 0.1f;
-        return (speed - epsilon) * Mathf.Sin(Mathf.PI * x) + epsilon;
+        return (speed / 5000f) * Mathf.Sin(Mathf.PI * x) + epsilon;
     }
     
-    public static IEnumerator SlerpTransformToPosition(Transform a, Vector3 b, float t)
+    public static IEnumerator SlerpTransformToPosition(Transform a, Vector3 b)
     {
         CameraControler.coroutineActive = true;
         
@@ -130,7 +130,7 @@ public class GameMath
              distance > 0.001f; distance = DistanceBetweenPointsOnEarth(a.position, b))
         {
             float x = (startDistance - distance) / startDistance;
-            float speed = Speed(x, t);
+            float speed = Speed(x, startDistance);
             a.position = Vector3.RotateTowards(a.position, b,  speed * Time.deltaTime, 0f);
             if (previousSpeed == speed) break;
             previousSpeed = speed;

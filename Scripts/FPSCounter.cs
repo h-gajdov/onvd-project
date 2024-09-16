@@ -14,11 +14,12 @@ public class FPSCounter : MonoBehaviour
     {
         uiText = GetComponent<TextMeshProUGUI>();
         frameDeltaTimeArray = new float[50];
+        Debug.Log(QualitySettings.vSyncCount);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P)) uiText.enabled = !uiText.enabled;
+        //if (Input.GetKeyDown(KeyCode.P)) uiText.enabled = !uiText.enabled;
         
         frameDeltaTimeArray[lastFrameIndex] = Time.deltaTime;
         lastFrameIndex = (lastFrameIndex + 1) % frameDeltaTimeArray.Length;
